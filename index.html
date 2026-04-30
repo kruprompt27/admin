@@ -1,760 +1,1079 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบขายแผนการสอน - ครูพร้อมสอน</title>
-  <script src="/_sdk/data_sdk.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <style>
-        body {
-            box-sizing: border-box;
-            font-family: 'Sarabun', 'Noto Sans Thai', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-            min-height: 100%;
-        }
-        
-        html, body {
-            height: 100%;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            background: #fefce8;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.15);
-            border: 1px solid #fde047;
-        }
-        
-        .header h1 {
-            color: #92400e;
-            font-size: 2.5rem;
-            margin: 0 0 10px 0;
-            font-weight: 700;
-        }
-        
-        .header p {
-            color: #a16207;
-            font-size: 1.1rem;
-            margin: 0;
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            align-items: start;
-        }
-        
-        .products-section {
-            background: #fefce8;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.15);
-            border: 1px solid #fde047;
-        }
-        
-        .customer-info {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #fef9c3;
-            border-radius: 15px;
-            border: 1px solid #facc15;
-        }
-        
-        .customer-info label {
-            display: block;
-            color: #92400e;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .customer-info input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #fde047;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-            background: #fffbeb;
-        }
-        
-        .customer-info input:focus {
-            outline: none;
-            border-color: #f59e0b;
-        }
-        
-        .grade-section {
-            margin-bottom: 20px;
-            border: 2px solid #fde047;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        
-        .grade-header {
-            background: #fef9c3;
-            padding: 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.3s;
-        }
-        
-        .grade-header:hover {
-            background: #fef08a;
-        }
-        
-        .grade-title {
-            color: #92400e;
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin: 0;
-        }
-        
-        .grade-toggle {
-            font-size: 1.5rem;
-            color: #a16207;
-            transition: transform 0.3s;
-        }
-        
-        .grade-toggle.expanded {
-            transform: rotate(180deg);
-        }
-        
-        .grade-content {
-            padding: 0 20px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-        }
-        
-        .grade-content.expanded {
-            max-height: 2000px;
-            padding: 20px;
-        }
-        
-        .subject-group {
-            margin-bottom: 15px;
-            border: 1px solid #facc15;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .subject-header {
-            background: #fffbeb;
-            padding: 15px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.3s;
-        }
-        
-        .subject-header:hover {
-            background: #fef9c3;
-        }
-        
-        .subject-name {
-            color: #a16207;
-            font-weight: 600;
-            margin: 0;
-            font-size: 1.1rem;
-        }
-        
-        .subject-toggle {
-            font-size: 1.2rem;
-            color: #a16207;
-            transition: transform 0.3s;
-        }
-        
-        .subject-toggle.expanded {
-            transform: rotate(180deg);
-        }
-        
-        .subject-content {
-            padding: 0;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-        }
-        
-        .subject-content.expanded {
-            max-height: 500px;
-            padding: 15px;
-        }
-        
-        .lesson-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin-left: 20px;
-        }
-        
-        .lesson-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            background: #fffbeb;
-            border: 2px solid #fde047;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .lesson-item:hover {
-            background: #fef9c3;
-            border-color: #f59e0b;
-        }
-        
-        .lesson-item.selected {
-            background: #fef08a;
-            border-color: #d97706;
-        }
-        
-        .lesson-item input[type="checkbox"] {
-            margin-right: 10px;
-            transform: scale(1.2);
-        }
-        
-        .lesson-details {
-            flex: 1;
-        }
-        
-        .lesson-hours {
-            font-weight: 600;
-            color: #92400e;
-        }
-        
-        .lesson-price {
-            color: #d97706;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-        
-        .cart-section {
-            background: #fefce8;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.15);
-            border: 1px solid #fde047;
-            position: sticky;
-            top: 20px;
-        }
-        
-        .cart-title {
-            color: #92400e;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .cart-items {
-            margin-bottom: 20px;
-        }
-        
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #fde047;
-        }
-        
-        .cart-item:last-child {
-            border-bottom: none;
-        }
-        
-        .cart-item-name {
-            flex: 1;
-            font-size: 0.9rem;
-            color: #a16207;
-        }
-        
-        .cart-item-price {
-            font-weight: 600;
-            color: #d97706;
-        }
-        
-        .remove-item {
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            margin-left: 10px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .cart-summary {
-            padding: 20px 0;
-            border-top: 2px solid #e2e8f0;
-        }
-        
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        
-        .summary-row.total {
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: #1e293b;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 10px;
-        }
-        
-        .discount-badge {
-            background: #10b981;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎓 ครูพร้อมสอน Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  font-family: 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f5f3ff;
+  color: #1f2937;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
 
-        
-        .empty-cart {
-            text-align: center;
-            color: #64748b;
-            padding: 40px 20px;
-        }
-        
+/* ===== Header ===== */
+.app-header {
+  position: sticky; top: 0; z-index: 100;
+  background: linear-gradient(135deg, #818cf8, #a78bfa, #f0abfc);
+  color: white;
+  padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(129, 140, 248, 0.2);
+}
+.app-header h1 { font-size: 17px; font-weight: 600; }
+.app-header h1 .icon { margin-right: 4px; }
+.user-menu { display: flex; align-items: center; gap: 8px; }
+.user-name { font-size: 13px; opacity: 0.9; }
+.btn-icon {
+  background: rgba(255,255,255,0.2); border: none; color: white;
+  width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.btn-icon:active { background: rgba(255,255,255,0.3); }
 
-        
-        .instruction-note {
-            background: #fef9c3;
-            border: 2px solid #fde047;
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            color: #92400e;
-            line-height: 1.6;
-        }
-        
-        .instruction-note p {
-            margin: 0 0 10px 0;
-        }
-        
-        .instruction-note p:last-child {
-            margin-bottom: 0;
-        }
-        
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .lesson-options {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
-  <style>@view-transition { navigation: auto; }</style>
-  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
- </head>
- <body>
-  <div class="container">
-   <div class="header">
-    <h1 id="page-title">ครูพร้อมสอน</h1>
-    <p id="page-subtitle">แผนการสอนคุณภาพสำหรับระดับชั้น ป.1-3 ตามหลักสูตร 2568</p>
-   </div>
-   <div class="main-content">
-    <div class="products-section">
-     <div id="products-container"><!-- Products will be generated here -->
-     </div>
+/* ===== Login Screen ===== */
+.login-screen {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 24px;
+  background: linear-gradient(135deg, #f5f3ff 0%, #fdf4ff 50%, #fef9c3 100%);
+}
+.login-card {
+  background: white; border-radius: 16px;
+  padding: 28px 24px;
+  width: 100%; max-width: 360px;
+  box-shadow: 0 12px 32px rgba(129, 140, 248, 0.15);
+}
+.login-logo {
+  width: 64px; height: 64px; border-radius: 16px;
+  background: linear-gradient(135deg, #818cf8, #a78bfa, #f0abfc);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; margin: 0 auto 16px;
+  box-shadow: 0 8px 20px rgba(129, 140, 248, 0.3);
+}
+.login-title { text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 4px; color: #4c4ca8; }
+.login-subtitle { text-align: center; font-size: 13px; color: #6b7280; margin-bottom: 24px; }
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px; }
+.form-input {
+  width: 100%; padding: 12px 14px;
+  border: 2px solid #e5e7eb; border-radius: 10px;
+  font-family: inherit; font-size: 15px;
+  transition: all 0.2s;
+  -webkit-appearance: none;
+}
+.form-input:focus {
+  outline: none; border-color: #a78bfa;
+  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.15);
+}
+.btn-primary {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, #818cf8, #a78bfa);
+  color: white; border: none; border-radius: 10px;
+  font-family: inherit; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 6px 16px rgba(129, 140, 248, 0.3);
+  margin-top: 8px;
+}
+.btn-primary:active { transform: translateY(1px); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.error-msg {
+  background: #fee2e2; color: #b91c1c;
+  padding: 10px 14px; border-radius: 8px;
+  font-size: 13px; margin-bottom: 14px;
+  border: 1px solid #fca5a5;
+}
+.error-msg.hidden { display: none; }
+
+/* ===== Main Container ===== */
+.main {
+  padding: 12px;
+  padding-bottom: 80px;
+  min-height: calc(100vh - 56px);
+}
+
+/* ===== Filter Tabs ===== */
+.filter-tabs {
+  display: flex; gap: 6px;
+  background: white; padding: 6px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.filter-tabs::-webkit-scrollbar { display: none; }
+.filter-tab {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  color: #6b7280; cursor: pointer;
+  border: none; background: transparent;
+  font-family: inherit;
+  white-space: nowrap;
+  position: relative;
+  transition: all 0.2s;
+}
+.filter-tab.active {
+  background: linear-gradient(135deg, #818cf8, #a78bfa);
+  color: white;
+  box-shadow: 0 2px 6px rgba(129, 140, 248, 0.3);
+}
+.filter-tab .badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px;
+  background: #f0abfc; color: white;
+  border-radius: 9px; padding: 0 5px;
+  font-size: 10px; font-weight: 700;
+  margin-left: 4px;
+}
+.filter-tab.active .badge {
+  background: white; color: #a78bfa;
+}
+
+/* ===== Order Cards ===== */
+.orders-list { display: flex; flex-direction: column; gap: 10px; }
+.order-card {
+  background: white; border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border-left: 4px solid #d1d5db;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.order-card:active { transform: scale(0.98); }
+.order-card.pending { border-left-color: #fcd34d; }
+.order-card.paid { border-left-color: #60a5fa; }
+.order-card.approved { border-left-color: #a78bfa; }
+.order-card.completed { border-left-color: #34d399; }
+.order-card.cancelled { border-left-color: #f87171; opacity: 0.7; }
+
+.order-card-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 8px;
+}
+.order-card-id {
+  font-size: 12px; color: #6b7280;
+  font-family: 'Courier New', monospace;
+}
+.order-card-status {
+  font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 999px;
+}
+.order-card-status.pending { background: #fef9c3; color: #a16207; }
+.order-card-status.paid { background: #dbeafe; color: #1e40af; }
+.order-card-status.approved { background: #ede9fe; color: #6b21a8; }
+.order-card-status.completed { background: #dcfce7; color: #15803d; }
+.order-card-status.cancelled { background: #fee2e2; color: #b91c1c; }
+
+.order-card-customer {
+  font-size: 14px; font-weight: 600; color: #1f2937;
+  margin-bottom: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.order-card-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: #6b7280;
+}
+.order-card-amount {
+  font-size: 16px; font-weight: 700;
+  background: linear-gradient(135deg, #818cf8, #f0abfc);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+  text-align: center; padding: 60px 24px;
+  color: #9ca3af;
+}
+.empty-state-emoji { font-size: 48px; margin-bottom: 12px; }
+.empty-state-text { font-size: 14px; }
+
+/* ===== Loading ===== */
+.loading {
+  text-align: center; padding: 40px 20px;
+  color: #6b7280; font-size: 13px;
+}
+.spinner {
+  display: inline-block; width: 24px; height: 24px;
+  border: 3px solid #e5e7eb; border-top-color: #a78bfa;
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+  margin-bottom: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== Order Detail Page ===== */
+.detail-page {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: #f5f3ff; z-index: 200;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  -webkit-overflow-scrolling: touch;
+}
+.detail-page.show { transform: translateX(0); }
+
+.detail-header {
+  position: sticky; top: 0; z-index: 10;
+  background: linear-gradient(135deg, #818cf8, #a78bfa);
+  color: white; padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 2px 8px rgba(129, 140, 248, 0.2);
+}
+.btn-back {
+  background: none; border: none; color: white;
+  font-size: 22px; padding: 4px 8px; cursor: pointer;
+  font-family: inherit;
+}
+.detail-header-title { font-size: 15px; font-weight: 600; flex: 1; }
+
+.detail-body { padding: 12px; padding-bottom: 100px; }
+
+.info-card {
+  background: white; border-radius: 12px;
+  padding: 14px 16px; margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.info-row {
+  display: flex; justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.info-row + .info-row { border-top: 1px solid #f3f4f6; }
+.info-label { color: #6b7280; }
+.info-value { color: #1f2937; font-weight: 500; text-align: right; word-break: break-all; }
+
+.section-title {
+  font-size: 13px; font-weight: 700; color: #4b5563;
+  margin: 16px 0 8px; padding: 0 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.subject-card {
+  background: white; border-radius: 10px;
+  padding: 12px; margin-bottom: 8px;
+  display: flex; align-items: flex-start; gap: 10px;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.subject-card.selected {
+  border-color: #a78bfa;
+  background: linear-gradient(135deg, #faf5ff, #fdf4ff);
+}
+.subject-card.disabled {
+  opacity: 0.6; cursor: not-allowed;
+  background: #f9fafb;
+}
+.subject-checkbox {
+  width: 20px; height: 20px; border-radius: 5px;
+  border: 2px solid #d1d5db;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+  transition: all 0.15s;
+}
+.subject-card.selected .subject-checkbox {
+  background: linear-gradient(135deg, #818cf8, #a78bfa);
+  border-color: transparent;
+  color: white;
+}
+.subject-info { flex: 1; min-width: 0; }
+.subject-name { font-size: 14px; font-weight: 500; color: #1f2937; }
+.subject-meta { font-size: 12px; color: #6b7280; margin-top: 2px; }
+.subject-status { font-size: 11px; margin-top: 4px; }
+.subject-status.ok { color: #15803d; }
+.subject-status.warn { color: #dc2626; }
+
+.warning-box {
+  background: #fef9c3; border: 1px solid #fde68a;
+  border-radius: 10px; padding: 10px 12px;
+  font-size: 12px; color: #713f12;
+  margin: 12px 0;
+  line-height: 1.6;
+}
+
+/* ===== Slip Display ===== */
+.slip-card {
+  background: white; border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.slip-img {
+  width: 100%; max-height: 480px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #f9fafb;
+  cursor: pointer;
+  display: block;
+  border: 1px solid #e5e7eb;
+}
+.slip-actions {
+  display: flex; gap: 8px;
+  margin-top: 10px;
+}
+.slip-action-btn {
+  flex: 1; text-align: center;
+  padding: 10px;
+  background: linear-gradient(135deg, #818cf8, #a78bfa);
+  color: white !important;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+}
+.slip-action-btn:active { opacity: 0.8; }
+.slip-error {
+  padding: 16px; text-align: center;
+  font-size: 13px; color: #6b7280;
+}
+.slip-error a {
+  color: #7c7ce0; text-decoration: underline;
+}
+.no-slip-card {
+  background: #fef9c3; border: 1px solid #fde68a;
+  border-radius: 10px; padding: 14px;
+  font-size: 13px; color: #713f12;
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+/* Slip fullscreen viewer */
+.slip-fullscreen {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.95);
+  z-index: 999;
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.slip-fullscreen.show { display: flex; }
+.slip-fullscreen img {
+  max-width: 100%; max-height: 100%;
+  object-fit: contain;
+}
+.slip-fullscreen-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  color: white; border: none;
+  font-size: 22px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ===== Slip Viewer ===== */
+.slip-viewer {
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.totals-box {
+  background: linear-gradient(135deg, #4c4ca8, #6b5bc4);
+  color: white; border-radius: 12px;
+  padding: 16px; margin: 12px 0;
+}
+.totals-row {
+  display: flex; justify-content: space-between;
+  font-size: 13px; padding: 3px 0;
+}
+.totals-row.discount { color: #fbcfe8; }
+.totals-divider { border-top: 1px solid rgba(255,255,255,0.2); margin: 8px 0; }
+.totals-net {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-top: 6px;
+}
+.totals-net-label { font-size: 13px; opacity: 0.85; }
+.totals-net-amount {
+  font-size: 22px; font-weight: 700;
+  background: linear-gradient(135deg, #fde68a, #f0abfc);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===== Action Buttons ===== */
+.action-bar {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background: white; padding: 12px;
+  border-top: 1px solid #e5e7eb;
+  display: flex; gap: 8px;
+  z-index: 10;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+}
+.btn-action {
+  flex: 1; padding: 14px;
+  border: none; border-radius: 10px;
+  font-family: inherit; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-action:active { transform: scale(0.97); }
+.btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-success {
+  background: linear-gradient(135deg, #6ee7b7, #34d399);
+  color: white;
+  box-shadow: 0 4px 12px rgba(110, 231, 183, 0.4);
+}
+.btn-warning {
+  background: linear-gradient(135deg, #fcd34d, #fbbf24);
+  color: white;
+  box-shadow: 0 4px 12px rgba(252, 211, 77, 0.4);
+}
+.btn-secondary {
+  background: white; color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+.btn-danger {
+  background: #fee2e2; color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed; bottom: 80px; left: 16px; right: 16px;
+  background: rgba(31, 41, 55, 0.95);
+  color: white; padding: 12px 16px;
+  border-radius: 10px; font-size: 13px;
+  z-index: 1000;
+  text-align: center;
+  transform: translateY(120%);
+  transition: transform 0.3s ease;
+  line-height: 1.5;
+}
+.toast.show { transform: translateY(0); }
+.toast.success { background: rgba(21, 128, 61, 0.95); }
+.toast.error { background: rgba(185, 28, 28, 0.95); }
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 500;
+  display: none; align-items: flex-end;
+  animation: fadeIn 0.2s;
+}
+.modal-overlay.show { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-sheet {
+  background: white; width: 100%;
+  border-radius: 18px 18px 0 0;
+  padding: 16px 16px 24px;
+  max-height: 80vh; overflow-y: auto;
+  animation: slideUp 0.25s;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.modal-handle {
+  width: 40px; height: 4px;
+  background: #d1d5db; border-radius: 2px;
+  margin: 0 auto 12px;
+}
+.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+.modal-actions { display: flex; flex-direction: column; gap: 8px; }
+.modal-action-btn {
+  padding: 14px;
+  border: none; border-radius: 10px;
+  font-family: inherit; font-size: 14px; font-weight: 500;
+  cursor: pointer; text-align: left;
+  display: flex; align-items: center; gap: 10px;
+}
+.modal-action-btn .icon { font-size: 18px; }
+.modal-action-btn.paid { background: #dbeafe; color: #1e40af; }
+.modal-action-btn.cancelled { background: #fee2e2; color: #b91c1c; }
+.modal-action-btn.cancel { background: #f3f4f6; color: #6b7280; justify-content: center; }
+.modal-action-btn:active { opacity: 0.8; }
+
+/* ===== Result Screen ===== */
+.result-screen {
+  background: white; border-radius: 12px;
+  padding: 20px 16px; margin: 16px 0;
+  text-align: center;
+}
+.result-icon { font-size: 48px; margin-bottom: 8px; }
+.result-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.result-detail { font-size: 13px; color: #6b7280; line-height: 1.6; }
+.result-detail .row { padding: 4px 0; }
+.result-detail .ok { color: #15803d; }
+.result-detail .err { color: #b91c1c; }
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ============ Login Screen ============ -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🎓</div>
+    <div class="login-title">ครูพร้อมสอน Admin</div>
+    <div class="login-subtitle">ระบบจัดการคำสั่งซื้อ</div>
+
+    <div id="loginError" class="error-msg hidden"></div>
+
+    <div class="form-group">
+      <label class="form-label">ชื่อผู้ใช้</label>
+      <input type="text" id="loginUsername" class="form-input" autocomplete="username" autocapitalize="none" autocorrect="off">
     </div>
-    <div class="cart-section">
-     <h3 class="cart-title">🛒 ตะกร้าสินค้า</h3>
-     <div id="cart-items" class="cart-items">
-      <div class="empty-cart">
-       <p>ยังไม่มีสินค้าในตะกร้า</p>
-       <p>เลือกแผนการสอนที่ต้องการ</p>
-      </div>
-     </div>
-     <div id="cart-summary" class="cart-summary" style="display: none;">
-      <div class="summary-row"><span>รวม:</span> <span id="subtotal">0 บาท</span>
-      </div>
-      <div class="summary-row" id="discount-row" style="display: none;"><span>ส่วนลด 5% <span class="discount-badge">3+ รายการ</span>:</span> <span id="discount-amount">0 บาท</span>
-      </div>
-      <div class="summary-row total"><span>ยอดรวมสุทธิ:</span> <span id="total-amount">0 บาท</span>
-      </div>
-     </div>
-     <div class="instruction-note">
-      <p><strong>📸 วิธีการสั่งซื้อ:</strong></p>
-      <p>หลังเลือกแผนที่ต้องการเสร็จแล้ว ให้แคปหน้าจอส่วนตะกร้าสินค้านี้ แล้วส่งกลับมาที่แชทของเพจ <strong>"ครูพร้อมสอน"</strong> เพื่อรับช่องทางชำระเงินนะคะ</p>
-     </div>
+    <div class="form-group">
+      <label class="form-label">รหัสผ่าน</label>
+      <input type="password" id="loginPassword" class="form-input" autocomplete="current-password">
     </div>
-   </div>
+    <button class="btn-primary" onclick="doLogin()">เข้าสู่ระบบ</button>
   </div>
-  <script>
-        // Configuration object
-        const defaultConfig = {
-            page_title: "ครูพร้อมสอน",
-            page_subtitle: "แผนการสอนคุณภาพสำหรับระดับชั้น ป.1-3 ตามหลักสูตร 2568",
-            contact_label: "ชื่อ Facebook สำหรับติดต่อ",
-            order_button_text: "สั่งซื้อแผนการสอน"
-        };
+</div>
 
-        // Lesson plans data
-        const lessonPlans = {
-            'ป.1': {
-                'ภาษาไทย': [{ hours: 200, price: 350 }],
-                'ภาษาอังกฤษ': [{ hours: 160, price: 300 }, { hours: 200, price: 350 }],
-                'คณิตศาสตร์': [{ hours: 200, price: 350 }],
-                'วิทยาศาสตร์และสิ่งแวดล้อม': [{ hours: 40, price: 200 }, { hours: 80, price: 250 }],
-                'การใช้เทคโนโลยีอย่างฉลาดรู้': [{ hours: 40, price: 200 }],
-                'วิทยาการคำนวณ': [{ hours: 40, price: 200 }],
-                'สังคมและความเป็นพลเมือง': [{ hours: 40, price: 200 }, { hours: 80, price: 250 }],
-                'ประวัติศาสตร์': [{ hours: 40, price: 200 }],
-                'เศรษฐกิจและการเงิน': [{ hours: 40, price: 200 }, { hours: 80, price: 250 }],
-                'สุขภาพกายและจิต': [{ hours: 40, price: 200 }],
-                'ศิลปะและวัฒนธรรมเพื่อสุนทรียภาพ': [{ hours: 40, price: 200 }],
-                'พลศึกษา': [{ hours: 40, price: 200 }],
-                'การงานอาชีพ': [{ hours: 40, price: 200 }]
-            },
-            'ป.2': {
-                'ภาษาไทย': [{ hours: 200, price: 350 }],
-                'ภาษาอังกฤษ': [{ hours: 160, price: 300 }, { hours: 200, price: 350 }],
-                'คณิตศาสตร์': [{ hours: 200, price: 350 }],
-                'วิทยาศาสตร์และสิ่งแวดล้อม': [{ hours: 40, price: 200 }, { hours: 80, price: 250 }],
-                'การใช้เทคโนโลยีอย่างฉลาดรู้': [{ hours: 40, price: 200 }],
-                'วิทยาการคำนวณ': [{ hours: 40, price: 200 }],
-                'สังคมและความเป็นพลเมือง': [{ hours: 40, price: 200 }, { hours: 80, price: 250 }],
-                'ประวัติศาสตร์': [{ hours: 40, price: 200 }],
-                'เศรษฐกิจและการเงิน': [{ hours: 40, price: 200 }, { hours: 80, price: 250 }],
-                'สุขภาพกายและจิต': [{ hours: 80, price: 250 }],
-                'ศิลปะและวัฒนธรรมเพื่อสุนทรียภาพ': [{ hours: 40, price: 200 }, { hours: 80, price: 250 }],
-                'พลศึกษา': [{ hours: 40, price: 200 }],
-                'การงานอาชีพ': [{ hours: 40, price: 200 }]
-            },
-            'ป.3': {
-                'ภาษาไทย': [{ hours: 160, price: 300 }, { hours: 200, price: 350 }],
-                'ภาษาอังกฤษ': [{ hours: 160, price: 300 }, { hours: 200, price: 350 }],
-                'คณิตศาสตร์': [{ hours: 200, price: 350 }],
-                'วิทยาศาสตร์และสิ่งแวดล้อม': [{ hours: 40, price: 200 }, { hours: 80, price: 250 }],
-                'การใช้เทคโนโลยีอย่างฉลาดรู้': [{ hours: 40, price: 200 }],
-                'วิทยาการคำนวณ': [{ hours: 40, price: 200 }],
-                'สังคมและความเป็นพลเมือง': [{ hours: 40, price: 200 }, { hours: 80, price: 250 }],
-                'ประวัติศาสตร์': [{ hours: 40, price: 200 }],
-                'เศรษฐกิจและการเงิน': [{ hours: 40, price: 200 }, { hours: 80, price: 250 }],
-                'สุขภาพกายและจิต': [{ hours: 80, price: 250 }],
-                'ศิลปะและวัฒนธรรมเพื่อสุนทรียภาพ': [{ hours: 40, price: 200 }, { hours: 80, price: 250 }],
-                'พลศึกษา': [{ hours: 40, price: 200 }],
-                'การงานอาชีพ': [{ hours: 40, price: 200 }]
-            }
-        };
+<!-- ============ App Screen ============ -->
+<div id="appScreen" class="hidden">
+  <div class="app-header">
+    <h1><span class="icon">🎓</span>ครูพร้อมสอน</h1>
+    <div class="user-menu">
+      <span class="user-name" id="currentUser"></span>
+      <button class="btn-icon" onclick="doLogout()" title="ออกจากระบบ">⏻</button>
+    </div>
+  </div>
 
-        let cart = [];
+  <div class="main">
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" data-filter="pending">รอชำระเงิน <span class="badge" id="badge-pending">0</span></button>
+      <button class="filter-tab" data-filter="paid">ชำระแล้ว <span class="badge" id="badge-paid">0</span></button>
+      <button class="filter-tab" data-filter="completed">ส่งแล้ว <span class="badge" id="badge-completed">0</span></button>
+      <button class="filter-tab" data-filter="all">ทั้งหมด</button>
+    </div>
 
-        // Function to get appropriate emoji for each subject
-        function getSubjectEmoji(subject) {
-            const emojiMap = {
-                'ภาษาไทย': '🇹🇭',
-                'ภาษาอังกฤษ': '🇬🇧',
-                'คณิตศาสตร์': '🔢',
-                'วิทยาศาสตร์และสิ่งแวดล้อม': '🔬',
-                'การใช้เทคโนโลยีอย่างฉลาดรู้': '💻',
-                'วิทยาการคำนวณ': '⚡',
-                'สังคมและความเป็นพลเมือง': '🏛️',
-                'ประวัติศาสตร์': '📜',
-                'เศรษฐกิจและการเงิน': '💰',
-                'สุขภาพกายและจิต': '💪',
-                'ศิลปะและวัฒนธรรมเพื่อสุนทรียภาพ': '🎨',
-                'พลศึกษา': '⚽',
-                'การงานอาชีพ': '🔧'
-            };
-            return emojiMap[subject] || '📚';
+    <div id="ordersList" class="orders-list">
+      <div class="loading"><div class="spinner"></div><div>กำลังโหลด...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Detail Page ============ -->
+<div id="detailPage" class="detail-page">
+  <div class="detail-header">
+    <button class="btn-back" onclick="closeDetail()">←</button>
+    <div class="detail-header-title" id="detailTitle">รายละเอียด</div>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<!-- ============ Status Modal ============ -->
+<div id="statusModal" class="modal-overlay" onclick="closeStatusModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">เปลี่ยนสถานะออเดอร์</div>
+    <div class="modal-actions">
+      <button class="modal-action-btn paid" onclick="updateStatus('ชำระเงินแล้ว')">
+        <span class="icon">💵</span><span>ชำระเงินแล้ว (ตรวจสลิปแล้ว)</span>
+      </button>
+      <button class="modal-action-btn cancelled" onclick="updateStatus('ยกเลิก')">
+        <span class="icon">❌</span><span>ยกเลิกคำสั่งซื้อ</span>
+      </button>
+      <button class="modal-action-btn cancel" onclick="closeStatusModal()">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Toast ============ -->
+<div id="toast" class="toast"></div>
+
+<!-- ============ Slip Fullscreen Viewer ============ -->
+<div id="slipFullscreen" class="slip-fullscreen" onclick="closeSlipFullscreen()">
+  <button class="slip-fullscreen-close" onclick="closeSlipFullscreen()">✕</button>
+  <img id="slipFullscreenImg" src="" alt="สลิป">
+</div>
+
+<script>
+// ============ State ============
+let currentToken = localStorage.getItem('admin_token') || null;
+let currentUser = localStorage.getItem('admin_user') || null;
+let currentFilter = 'pending';
+let currentOrder = null;
+let allOrders = [];
+
+// ============ API ============
+function callApi(action, data) {
+  return new Promise((resolve, reject) => {
+    const payload = Object.assign({ action: action, token: currentToken }, data || {});
+    google.script.run
+      .withSuccessHandler(result => {
+        try {
+          // result เป็น JSON string ที่ได้จาก ContentService.getContent()
+          const parsed = (typeof result === 'string') ? JSON.parse(result) : result;
+          resolve(parsed);
+        } catch (e) {
+          resolve({ success: false, error: 'parse error: ' + (result || '').substring(0, 200) });
         }
+      })
+      .withFailureHandler(err => reject(err))
+      .handleAdminActionFromHtml(payload);
+  });
+}
 
-        // Data handler for SDK
-        const dataHandler = {
-            onDataChanged(data) {
-                // Update UI if needed when data changes
-                console.log('Orders updated:', data.length);
-            }
-        };
+// ============ Login ============
+function doLogin() {
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errorEl = document.getElementById('loginError');
 
-        // Initialize the application
-        async function initApp() {
-            // Initialize Data SDK
-            if (window.dataSdk) {
-                const initResult = await window.dataSdk.init(dataHandler);
-                if (!initResult.isOk) {
-                    console.error('Failed to initialize data SDK');
-                }
-            }
+  if (!username || !password) {
+    showLoginError('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
+    return;
+  }
 
-            // Initialize Element SDK
-            if (window.elementSdk) {
-                await window.elementSdk.init({
-                    defaultConfig,
-                    onConfigChange: async (config) => {
-                        document.getElementById('page-title').textContent = config.page_title || defaultConfig.page_title;
-                        document.getElementById('page-subtitle').textContent = config.page_subtitle || defaultConfig.page_subtitle;
-                        document.getElementById('contact-label').textContent = config.contact_label || defaultConfig.contact_label + ':';
-                        document.getElementById('order-button-text').textContent = config.order_button_text || defaultConfig.order_button_text;
-                    },
-                    mapToCapabilities: (config) => ({
-                        recolorables: [],
-                        borderables: [],
-                        fontEditable: undefined,
-                        fontSizeable: undefined
-                    }),
-                    mapToEditPanelValues: (config) => new Map([
-                        ['page_title', config.page_title || defaultConfig.page_title],
-                        ['page_subtitle', config.page_subtitle || defaultConfig.page_subtitle],
-                        ['contact_label', config.contact_label || defaultConfig.contact_label],
-                        ['order_button_text', config.order_button_text || defaultConfig.order_button_text]
-                    ])
-                });
-            }
+  errorEl.classList.add('hidden');
+  const btn = document.querySelector('.btn-primary');
+  btn.disabled = true; btn.textContent = 'กำลังเข้าสู่ระบบ...';
 
-            generateProducts();
-            setupEventListeners();
-        }
+  callApi('login', { username, password })
+    .then(res => {
+      btn.disabled = false; btn.textContent = 'เข้าสู่ระบบ';
+      if (res.success) {
+        currentToken = res.token;
+        currentUser = res.username;
+        localStorage.setItem('admin_token', currentToken);
+        localStorage.setItem('admin_user', currentUser);
+        showApp();
+      } else {
+        showLoginError(res.error || 'ไม่สามารถเข้าสู่ระบบ');
+      }
+    })
+    .catch(err => {
+      btn.disabled = false; btn.textContent = 'เข้าสู่ระบบ';
+      showLoginError('เกิดข้อผิดพลาด: ' + err.message);
+    });
+}
 
-        function generateProducts() {
-            const container = document.getElementById('products-container');
-            
-            Object.keys(lessonPlans).forEach(grade => {
-                const gradeSection = document.createElement('div');
-                gradeSection.className = 'grade-section';
-                
-                // Grade header with toggle
-                const gradeHeader = document.createElement('div');
-                gradeHeader.className = 'grade-header';
-                gradeHeader.addEventListener('click', () => toggleGrade(grade));
-                
-                const gradeTitle = document.createElement('h2');
-                gradeTitle.className = 'grade-title';
-                gradeTitle.textContent = `ชั้น${grade}`;
-                
-                const gradeToggle = document.createElement('span');
-                gradeToggle.className = 'grade-toggle';
-                gradeToggle.textContent = '▼';
-                
-                gradeHeader.appendChild(gradeTitle);
-                gradeHeader.appendChild(gradeToggle);
-                gradeSection.appendChild(gradeHeader);
-                
-                // Grade content (initially hidden)
-                const gradeContent = document.createElement('div');
-                gradeContent.className = 'grade-content';
-                gradeContent.id = `grade-${grade}`;
-                
-                Object.keys(lessonPlans[grade]).forEach(subject => {
-                    const subjectGroup = document.createElement('div');
-                    subjectGroup.className = 'subject-group';
-                    
-                    // Subject header with toggle
-                    const subjectHeader = document.createElement('div');
-                    subjectHeader.className = 'subject-header';
-                    subjectHeader.addEventListener('click', () => toggleSubject(grade, subject));
-                    
-                    const subjectName = document.createElement('div');
-                    subjectName.className = 'subject-name';
-                    subjectName.textContent = `${getSubjectEmoji(subject)} ${subject}`;
-                    
-                    const subjectToggle = document.createElement('span');
-                    subjectToggle.className = 'subject-toggle';
-                    subjectToggle.textContent = '▼';
-                    
-                    subjectHeader.appendChild(subjectName);
-                    subjectHeader.appendChild(subjectToggle);
-                    subjectGroup.appendChild(subjectHeader);
-                    
-                    // Subject content (initially hidden)
-                    const subjectContent = document.createElement('div');
-                    subjectContent.className = 'subject-content';
-                    subjectContent.id = `subject-${grade}-${subject.replace(/\s+/g, '-')}`;
-                    
-                    const lessonOptions = document.createElement('div');
-                    lessonOptions.className = 'lesson-options';
-                    
-                    lessonPlans[grade][subject].forEach((lesson, index) => {
-                        const lessonItem = document.createElement('div');
-                        lessonItem.className = 'lesson-item';
-                        
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        checkbox.id = `${grade}-${subject}-${index}`;
-                        checkbox.value = JSON.stringify({
-                            grade,
-                            subject,
-                            hours: lesson.hours,
-                            price: lesson.price,
-                            id: `${grade}-${subject}-${index}`
-                        });
-                        
-                        const lessonDetails = document.createElement('div');
-                        lessonDetails.className = 'lesson-details';
-                        
-                        const hoursDiv = document.createElement('div');
-                        hoursDiv.className = 'lesson-hours';
-                        hoursDiv.textContent = `${lesson.hours} ชั่วโมง`;
-                        
-                        const priceDiv = document.createElement('div');
-                        priceDiv.className = 'lesson-price';
-                        priceDiv.textContent = `${lesson.price} บาท`;
-                        
-                        lessonDetails.appendChild(hoursDiv);
-                        lessonDetails.appendChild(priceDiv);
-                        
-                        lessonItem.appendChild(checkbox);
-                        lessonItem.appendChild(lessonDetails);
-                        
-                        lessonItem.addEventListener('click', (e) => {
-                            if (e.target !== checkbox) {
-                                checkbox.checked = !checkbox.checked;
-                                checkbox.dispatchEvent(new Event('change'));
-                            }
-                        });
-                        
-                        checkbox.addEventListener('change', updateCart);
-                        
-                        lessonOptions.appendChild(lessonItem);
-                    });
-                    
-                    subjectContent.appendChild(lessonOptions);
-                    subjectGroup.appendChild(subjectContent);
-                    gradeContent.appendChild(subjectGroup);
-                });
-                
-                gradeSection.appendChild(gradeContent);
-                container.appendChild(gradeSection);
-            });
-        }
+function showLoginError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
 
-        function updateCart() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            cart = Array.from(checkboxes).map(cb => JSON.parse(cb.value));
-            
-            // Update lesson item styles
-            document.querySelectorAll('.lesson-item').forEach(item => {
-                const checkbox = item.querySelector('input[type="checkbox"]');
-                if (checkbox.checked) {
-                    item.classList.add('selected');
-                } else {
-                    item.classList.remove('selected');
-                }
-            });
-            
-            renderCart();
-        }
+function doLogout() {
+  if (!confirm('ออกจากระบบ?')) return;
+  currentToken = null;
+  currentUser = null;
+  localStorage.removeItem('admin_token');
+  localStorage.removeItem('admin_user');
+  showLogin();
+}
 
-        function renderCart() {
-            const cartItemsContainer = document.getElementById('cart-items');
-            const cartSummary = document.getElementById('cart-summary');
-            const orderButton = document.getElementById('order-button');
-            
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = `
-                    <div class="empty-cart">
-                        <p>ยังไม่มีสินค้าในตะกร้า</p>
-                        <p>เลือกแผนการสอนที่ต้องการ</p>
-                    </div>
-                `;
-                cartSummary.style.display = 'none';
-                orderButton.disabled = true;
-                return;
-            }
-            
-            cartItemsContainer.innerHTML = '';
-            cart.forEach(item => {
-                const cartItem = document.createElement('div');
-                cartItem.className = 'cart-item';
-                
-                cartItem.innerHTML = `
-                    <div class="cart-item-name">
-                        ${item.grade} ${item.subject} (${item.hours} ชม.)
-                    </div>
-                    <div class="cart-item-price">${item.price} บาท</div>
-                    <button class="remove-item" onclick="removeFromCart('${item.id}')">×</button>
-                `;
-                
-                cartItemsContainer.appendChild(cartItem);
-            });
-            
-            // Calculate totals
-            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const hasDiscount = cart.length >= 3;
-            const discountAmount = hasDiscount ? Math.round(subtotal * 0.05) : 0;
-            const total = subtotal - discountAmount;
-            
-            document.getElementById('subtotal').textContent = `${subtotal} บาท`;
-            document.getElementById('discount-amount').textContent = `-${discountAmount} บาท`;
-            document.getElementById('total-amount').textContent = `${total} บาท`;
-            
-            const discountRow = document.getElementById('discount-row');
-            discountRow.style.display = hasDiscount ? 'flex' : 'none';
-            
-            cartSummary.style.display = 'block';
-            orderButton.disabled = false;
-        }
+function showLogin() {
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('appScreen').classList.add('hidden');
+}
 
-        function removeFromCart(itemId) {
-            const checkbox = document.getElementById(itemId);
-            if (checkbox) {
-                checkbox.checked = false;
-                updateCart();
-            }
-        }
+function showApp() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('appScreen').classList.remove('hidden');
+  document.getElementById('currentUser').textContent = currentUser;
+  loadOrders();
+}
 
-        function toggleGrade(grade) {
-            const gradeContent = document.getElementById(`grade-${grade}`);
-            const gradeToggle = gradeContent.parentElement.querySelector('.grade-toggle');
-            
-            if (gradeContent.classList.contains('expanded')) {
-                gradeContent.classList.remove('expanded');
-                gradeToggle.classList.remove('expanded');
-            } else {
-                gradeContent.classList.add('expanded');
-                gradeToggle.classList.add('expanded');
-            }
-        }
-        
-        function toggleSubject(grade, subject) {
-            const subjectId = `subject-${grade}-${subject.replace(/\s+/g, '-')}`;
-            const subjectContent = document.getElementById(subjectId);
-            const subjectToggle = subjectContent.parentElement.querySelector('.subject-toggle');
-            
-            if (subjectContent.classList.contains('expanded')) {
-                subjectContent.classList.remove('expanded');
-                subjectToggle.classList.remove('expanded');
-            } else {
-                subjectContent.classList.add('expanded');
-                subjectToggle.classList.add('expanded');
-            }
-        }
+// ============ Orders List ============
+function loadOrders() {
+  const listEl = document.getElementById('ordersList');
+  listEl.innerHTML = '<div class="loading"><div class="spinner"></div><div>กำลังโหลดคำสั่งซื้อ...</div></div>';
 
-        function setupEventListeners() {
-            // Event listeners for product selection are handled in generateProducts()
-        }
+  callApi('listOrders', { filter: 'all' })
+    .then(res => {
+      if (!res.success) {
+        if (res.error === 'unauthorized') { doLogout(); return; }
+        listEl.innerHTML = '<div class="empty-state"><div class="empty-state-emoji">⚠️</div><div>' + (res.error || 'โหลดข้อมูลไม่สำเร็จ') + '</div></div>';
+        return;
+      }
+      allOrders = res.orders || [];
+      updateBadges();
+      renderOrders();
+    })
+    .catch(err => {
+      listEl.innerHTML = '<div class="empty-state"><div class="empty-state-emoji">⚠️</div><div>ผิดพลาด: ' + err.message + '</div></div>';
+    });
+}
 
+function updateBadges() {
+  const counts = { pending: 0, paid: 0, completed: 0 };
+  allOrders.forEach(o => {
+    if (o.status === 'รอชำระเงิน') counts.pending++;
+    else if (o.status === 'ชำระเงินแล้ว') counts.paid++;
+    else if (o.status === 'ส่งแผนเสร็จสิ้น') counts.completed++;
+  });
+  document.getElementById('badge-pending').textContent = counts.pending;
+  document.getElementById('badge-paid').textContent = counts.paid;
+  document.getElementById('badge-completed').textContent = counts.completed;
+}
 
+function renderOrders() {
+  const listEl = document.getElementById('ordersList');
 
-        // Initialize app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a10d9fd57d445cf',t:'MTc2MzU2NzMwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+  let filtered = allOrders;
+  if (currentFilter === 'pending') filtered = allOrders.filter(o => o.status === 'รอชำระเงิน');
+  else if (currentFilter === 'paid') filtered = allOrders.filter(o => o.status === 'ชำระเงินแล้ว');
+  else if (currentFilter === 'completed') filtered = allOrders.filter(o => o.status === 'ส่งแผนเสร็จสิ้น');
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div class="empty-state"><div class="empty-state-emoji">📭</div><div class="empty-state-text">ไม่มีคำสั่งซื้อในหมวดนี้</div></div>';
+    return;
+  }
+
+  listEl.innerHTML = filtered.map(o => {
+    const statusClass = getStatusClass(o.status);
+    const ts = formatDate(o.timestamp);
+    return `
+      <div class="order-card ${statusClass}" onclick="openDetail(${o.row})">
+        <div class="order-card-header">
+          <span class="order-card-id">${escapeHtml(o.orderId)}</span>
+          <span class="order-card-status ${statusClass}">${escapeHtml(o.status)}</span>
+        </div>
+        <div class="order-card-customer">${escapeHtml(o.customerFb || '-')}</div>
+        <div class="order-card-meta">
+          <span>${ts} • ${o.itemCount || 0} รายการ</span>
+          <span class="order-card-amount">฿${formatNumber(o.netTotal)}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function getStatusClass(status) {
+  const map = {
+    'รอชำระเงิน': 'pending',
+    'ชำระเงินแล้ว': 'paid',
+    'อนุมัติส่งแผน': 'approved',
+    'ส่งแผนเสร็จสิ้น': 'completed',
+    'ยกเลิก': 'cancelled'
+  };
+  return map[status] || 'pending';
+}
+
+// ============ Filter Tabs ============
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentFilter = tab.dataset.filter;
+    renderOrders();
+  });
+});
+
+// ============ Order Detail ============
+function openDetail(row) {
+  const detailPage = document.getElementById('detailPage');
+  const body = document.getElementById('detailBody');
+  body.innerHTML = '<div class="loading"><div class="spinner"></div><div>กำลังโหลด...</div></div>';
+  detailPage.classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  callApi('getOrderDetail', { row })
+    .then(res => {
+      if (!res.success) {
+        if (res.error === 'unauthorized') { doLogout(); return; }
+        body.innerHTML = '<div class="empty-state">โหลดข้อมูลไม่สำเร็จ</div>';
+        return;
+      }
+      currentOrder = res.order;
+      renderDetail(currentOrder);
+    });
+}
+
+function closeDetail() {
+  document.getElementById('detailPage').classList.remove('show');
+  document.body.style.overflow = '';
+  currentOrder = null;
+}
+
+function renderDetail(order) {
+  document.getElementById('detailTitle').textContent = order.orderId;
+
+  const ts = formatDate(order.timestamp);
+  const statusClass = getStatusClass(order.status);
+
+  // เลือก default ตามสถานะ + ความพร้อม
+  const canApprove = order.subjects.length > 0 && order.subjects.some(s => s.hasLink);
+  const subjectsHtml = order.subjects.map((s, i) => {
+    const meta = [];
+    if (s.curriculum) meta.push('หลักสูตร ' + s.curriculum);
+    if (s.hours) meta.push(s.hours + ' ชม.');
+    if (s.planCount) meta.push(s.planCount + ' แผน');
+
+    let status = '';
+    if (s.hasLink && s.hasMessage) status = '<div class="subject-status ok">✓ ลิงก์ + ข้อความครบ</div>';
+    else if (s.hasLink) status = '<div class="subject-status warn">⚠ มีลิงก์ แต่ยังไม่มีข้อความ (ระบบใช้ template default)</div>';
+    else status = '<div class="subject-status warn">⚠ ยังไม่มีลิงก์ Drive</div>';
+
+    const disabled = !s.hasLink ? 'disabled' : '';
+    const checked = s.hasLink ? 'selected' : '';
+
+    return `
+      <div class="subject-card ${checked} ${disabled}" data-idx="${i}" onclick="toggleSubject(${i})">
+        <div class="subject-checkbox">${s.hasLink ? '✓' : ''}</div>
+        <div class="subject-info">
+          <div class="subject-name">${escapeHtml(s.subject)} ${escapeHtml(s.grade)}</div>
+          <div class="subject-meta">${meta.join(' • ')}</div>
+          ${status}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  let actionBar = '';
+  if (order.status === 'รอชำระเงิน') {
+    actionBar = `
+      <button class="btn-action btn-warning" onclick="openStatusModal()">📋 เปลี่ยนสถานะ</button>
+      <button class="btn-action btn-success" onclick="confirmApproval()" ${canApprove ? '' : 'disabled'}>✅ ส่งแผนทันที</button>
+    `;
+  } else if (order.status === 'ชำระเงินแล้ว') {
+    actionBar = `
+      <button class="btn-action btn-secondary" onclick="closeDetail()">ปิด</button>
+      <button class="btn-action btn-success" onclick="confirmApproval()" ${canApprove ? '' : 'disabled'}>✅ ส่งแผนทันที</button>
+    `;
+  } else {
+    actionBar = `
+      <button class="btn-action btn-secondary" onclick="closeDetail()">ปิด</button>
+      <button class="btn-action btn-warning" onclick="openStatusModal()">📋 เปลี่ยนสถานะ</button>
+    `;
+  }
+
+  document.getElementById('detailBody').innerHTML = `
+    <div class="info-card">
+      <div class="info-row">
+        <span class="info-label">สถานะ</span>
+        <span class="order-card-status ${statusClass}">${escapeHtml(order.status)}</span>
+      </div>
+      <div class="info-row"><span class="info-label">วันที่</span><span class="info-value">${ts}</span></div>
+      <div class="info-row"><span class="info-label">รหัส</span><span class="info-value">${escapeHtml(order.orderId)}</span></div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-row"><span class="info-label">📘 Facebook</span><span class="info-value">${escapeHtml(order.customerFb)}</span></div>
+      <div class="info-row"><span class="info-label">📧 Gmail</span><span class="info-value">${escapeHtml(order.customerEmail)}</span></div>
+    </div>
+
+    <div class="totals-box">
+      <div class="totals-row"><span>ราคารวม</span><span>${formatNumber(order.subtotal)} บาท</span></div>
+      ${order.discountPercentValue > 0 ? `<div class="totals-row discount"><span>ส่วนลด ${order.discountPercent}%</span><span>- ${formatNumber(order.discountPercentValue)} บาท</span></div>` : ''}
+      <div class="totals-divider"></div>
+      <div class="totals-net">
+        <span class="totals-net-label">ยอดสุทธิ</span>
+        <span class="totals-net-amount">฿${formatNumber(order.netTotal)}</span>
+      </div>
+    </div>
+
+    ${order.slipUrl ? `
+      <div class="section-title">💳 สลิปการโอนเงิน</div>
+      <div class="slip-viewer">
+        <img class="slip-img" src="${escapeHtml(order.slipPreviewUrl || order.slipUrl)}" alt="สลิป" onclick="openSlipFullscreen('${escapeHtml(order.slipUrl)}')" onerror="this.parentElement.innerHTML='<div class=\\'slip-error\\'>📎 <a href=&quot;${escapeHtml(order.slipUrl)}&quot; target=&quot;_blank&quot;>เปิดดูสลิปบน Google Drive</a></div>'">
+        <div class="slip-actions">
+          <a href="${escapeHtml(order.slipUrl)}" target="_blank" class="slip-action-btn">🔍 ดูเต็มจอ</a>
+        </div>
+      </div>
+    ` : (order.status === 'รอชำระเงิน' ? `
+      <div class="warning-box" style="margin-top:12px;">
+        ⏳ <strong>ลูกค้ายังไม่ได้อัปสลิป</strong> — รอลูกค้าอัปสลิปทางหน้าเว็บ หรือคุณตรวจจาก Messenger ด้วยตนเอง
+      </div>
+    ` : '')}
+
+    <div class="section-title">📦 รายการวิชา (${order.subjects.length} วิชา)</div>
+    ${order.subjects.length > 0 ? subjectsHtml : '<div class="info-card"><div class="info-label">ไม่มีรายการวิชา (อาจเป็น VIP เท่านั้น)</div></div>'}
+
+    <div class="warning-box">
+      ⚠️ <strong>ก่อนกด "ส่งแผนทันที":</strong> ตรวจสลิปการโอนเงินให้แน่ใจก่อนนะคะ — ระบบจะแชร์ Drive + ส่งเมลให้ลูกค้าทันที ไม่สามารถยกเลิกได้
+    </div>
+
+    <div class="action-bar">
+      ${actionBar}
+    </div>
+  `;
+}
+
+function toggleSubject(idx) {
+  const card = document.querySelector('.subject-card[data-idx="' + idx + '"]');
+  if (!card || card.classList.contains('disabled')) return;
+  card.classList.toggle('selected');
+  const cb = card.querySelector('.subject-checkbox');
+  cb.textContent = card.classList.contains('selected') ? '✓' : '';
+}
+
+function getSelectedSubjects() {
+  if (!currentOrder) return [];
+  return currentOrder.subjects.filter((s, i) => {
+    const card = document.querySelector('.subject-card[data-idx="' + i + '"]');
+    return card && card.classList.contains('selected') && !card.classList.contains('disabled');
+  });
+}
+
+// ============ Status Modal ============
+function openStatusModal() {
+  document.getElementById('statusModal').classList.add('show');
+}
+function closeStatusModal(e) {
+  if (e && e.target.id !== 'statusModal' && !e.target.classList.contains('cancel')) return;
+  document.getElementById('statusModal').classList.remove('show');
+}
+
+function updateStatus(newStatus) {
+  if (!currentOrder) return;
+  closeStatusModal();
+  showToast('กำลังอัปเดต...', '');
+
+  callApi('updateStatus', { row: currentOrder.row, status: newStatus })
+    .then(res => {
+      if (!res.success) {
+        if (res.error === 'unauthorized') { doLogout(); return; }
+        showToast('❌ ' + (res.error || 'ไม่สำเร็จ'), 'error');
+        return;
+      }
+      showToast('✅ อัปเดตเป็น "' + newStatus + '"', 'success');
+      setTimeout(() => {
+        closeDetail();
+        loadOrders();
+      }, 800);
+    });
+}
+
+// ============ Approval ============
+function confirmApproval() {
+  if (!currentOrder) return;
+  const selected = getSelectedSubjects();
+  if (selected.length === 0) {
+    showToast('กรุณาเลือกอย่างน้อย 1 วิชา', 'error');
+    return;
+  }
+  if (!confirm('ยืนยันส่งแผน ' + selected.length + ' วิชาให้ ' + currentOrder.customerEmail + '?')) return;
+
+  showToast('⏳ กำลังแชร์ Drive และส่งเมล...', '');
+  document.querySelectorAll('.btn-action').forEach(b => b.disabled = true);
+
+  callApi('approveOrder', {
+    row: currentOrder.row,
+    customerEmail: currentOrder.customerEmail,
+    customerFb: currentOrder.customerFb,
+    subjects: selected
+  }).then(res => {
+    if (!res.success) {
+      if (res.error === 'unauthorized') { doLogout(); return; }
+      showToast('❌ ' + (res.error || 'ไม่สำเร็จ'), 'error');
+      document.querySelectorAll('.btn-action').forEach(b => b.disabled = false);
+      return;
+    }
+    showApprovalResult(res.result);
+  }).catch(err => {
+    showToast('❌ ' + err.message, 'error');
+    document.querySelectorAll('.btn-action').forEach(b => b.disabled = false);
+  });
+}
+
+function showApprovalResult(result) {
+  const sharedHtml = result.shared.length > 0
+    ? '<div class="row ok">✅ แชร์สำเร็จ ' + result.shared.length + ' วิชา</div>'
+    : '';
+  const failedHtml = result.failed.length > 0
+    ? '<div class="row err">⚠️ ล้มเหลว ' + result.failed.length + ' วิชา</div>' +
+      result.failed.map(f => '<div class="row err" style="font-size:11px;">• ' + escapeHtml(f.subject) + ' ' + escapeHtml(f.grade) + ': ' + escapeHtml(f.reason) + '</div>').join('')
+    : '';
+  const emailHtml = result.emailSent
+    ? '<div class="row ok">✅ ส่งเมลให้ลูกค้าเรียบร้อย</div>'
+    : (result.emailError ? '<div class="row err">❌ ส่งเมลล้มเหลว</div>' : '');
+
+  const isSuccess = result.shared.length > 0 && result.emailSent;
+
+  document.getElementById('detailBody').innerHTML = `
+    <div class="result-screen">
+      <div class="result-icon">${isSuccess ? '🎉' : '⚠️'}</div>
+      <div class="result-title">${isSuccess ? 'ส่งแผนสำเร็จ!' : 'ส่งบางส่วน'}</div>
+      <div class="result-detail">
+        ${sharedHtml}
+        ${failedHtml}
+        ${emailHtml}
+      </div>
+    </div>
+    <div class="action-bar">
+      <button class="btn-action btn-success" onclick="closeDetail(); loadOrders();" style="flex:1;">เสร็จสิ้น</button>
+    </div>
+  `;
+}
+
+// ============ Toast ============
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type || '');
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ============ Slip Fullscreen ============
+function openSlipFullscreen(url) {
+  if (!url) return;
+  // ถ้าเป็น Drive URL ปกติ → แปลงเป็น preview URL
+  let imgUrl = url;
+  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) imgUrl = 'https://drive.google.com/uc?export=view&id=' + m[1];
+
+  document.getElementById('slipFullscreenImg').src = imgUrl;
+  document.getElementById('slipFullscreen').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSlipFullscreen() {
+  document.getElementById('slipFullscreen').classList.remove('show');
+  if (!document.getElementById('detailPage').classList.contains('show')) {
+    document.body.style.overflow = '';
+  }
+}
+
+// ============ Helpers ============
+function openSlipFullscreen(url) {
+  if (url) window.open(url, '_blank');
+}
+
+function escapeHtml(text) {
+  if (text === null || text === undefined) return '';
+  return String(text)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function formatNumber(n) {
+  return Math.round(Number(n) || 0).toLocaleString('en-US');
+}
+function formatDate(dateStr) {
+  if (!dateStr) return '-';
+  // Sheet returns Date object → format as DD/MM HH:MM
+  try {
+    const d = (dateStr instanceof Date) ? dateStr : new Date(dateStr);
+    if (isNaN(d.getTime())) return String(dateStr).substring(0, 16);
+    const pad = (n) => String(n).padStart(2, '0');
+    return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ' ' +
+      pad(d.getHours()) + ':' + pad(d.getMinutes());
+  } catch (e) {
+    return String(dateStr).substring(0, 16);
+  }
+}
+
+// ============ Init ============
+if (currentToken && currentUser) {
+  showApp();
+} else {
+  showLogin();
+}
+
+// Enter to login
+document.getElementById('loginPassword').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
 </html>
