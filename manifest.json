@@ -1,0 +1,56 @@
+{
+  "name": "ครูพร้อมสอน Admin",
+  "short_name": "KruPromSorn",
+  "description": "ระบบจัดการออเดอร์แผนการสอนสำหรับครูพร้อมสอน",
+  "start_url": "./admin.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f3ff",
+  "theme_color": "#818cf8",
+  "lang": "th",
+  "dir": "ltr",
+  "categories": ["business", "education", "productivity"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "ออเดอร์รอชำระ",
+      "short_name": "รอชำระ",
+      "description": "ดูออเดอร์ที่รอการชำระเงิน",
+      "url": "./admin.html?tab=orders&filter=pending",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "ออเดอร์รอส่งแผน",
+      "short_name": "รอส่ง",
+      "description": "ดูออเดอร์ที่รอการส่งแผน",
+      "url": "./admin.html?tab=orders&filter=approved",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
