@@ -11,17 +11,17 @@
  * - Fonts: Cache-First with fallback
  */
 
-const CACHE_VERSION = 'krupromsorn-v1.0.0';
+const CACHE_VERSION = 'krupromsorn-v1.0.1';
 const CACHE_NAME = `${CACHE_VERSION}-cache`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
 // ไฟล์ที่ต้อง cache ทันทีตอนติดตั้ง
 const PRECACHE_URLS = [
-  './',
-  './admin.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  '/admin/',
+  '/admin/index.html',
+  '/admin/manifest.json',
+  '/admin/icon-192.png',
+  '/admin/icon-512.png'
 ];
 
 // Install: ดาวน์โหลด app shell ไว้ใน cache
@@ -98,9 +98,9 @@ async function cacheFirst(request) {
     return response;
   } catch (err) {
     console.warn('[SW] Cache-first fetch failed:', request.url);
-    // ถ้าเป็น HTML → คืนหน้า admin.html (offline fallback)
+    // ถ้าเป็น HTML → คืนหน้า index.html (offline fallback)
     if (request.destination === 'document') {
-      return caches.match('./admin.html');
+      return caches.match('/admin/index.html');
     }
     throw err;
   }
@@ -119,7 +119,7 @@ async function networkFirst(request) {
     const cached = await caches.match(request);
     if (cached) return cached;
     if (request.destination === 'document') {
-      return caches.match('./admin.html');
+      return caches.match('/admin/index.html');
     }
     throw err;
   }

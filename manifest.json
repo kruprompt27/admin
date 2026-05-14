@@ -2,8 +2,8 @@
   "name": "ครูพร้อมสอน Admin",
   "short_name": "KruPromSorn",
   "description": "ระบบจัดการออเดอร์แผนการสอนสำหรับครูพร้อมสอน",
-  "start_url": "./admin.html",
-  "scope": "./",
+  "start_url": "/admin/",
+  "scope": "/admin/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f5f3ff",
@@ -42,14 +42,14 @@
       "name": "ออเดอร์รอชำระ",
       "short_name": "รอชำระ",
       "description": "ดูออเดอร์ที่รอการชำระเงิน",
-      "url": "./admin.html?tab=orders&filter=pending",
+      "url": "/admin/?tab=orders&filter=pending",
       "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "ออเดอร์รอส่งแผน",
       "short_name": "รอส่ง",
       "description": "ดูออเดอร์ที่รอการส่งแผน",
-      "url": "./admin.html?tab=orders&filter=approved",
+      "url": "/admin/?tab=orders&filter=approved",
       "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     }
   ]
