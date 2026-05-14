@@ -1851,21 +1851,52 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============ API ============
+// ============ 🆕 v7.5: Apps Script URL Configuration ============
+// ⚠️ สำคัญ: ใส่ URL ของ Apps Script Web App ที่ deploy แล้ว
+// ดูได้จาก Apps Script Editor → Deploy → Manage deployments → Web app URL
+// ตัวอย่าง: https://script.google.com/macros/s/AKfycb.../exec
+const GOOGLE_SCRIPT_URL = localStorage.getItem('kp_script_url') ||
+  'https://script.google.com/macros/s/AKfycbzgW0XzuBDo0Mz6qOyfGS1JDsAqsLxJVTS-HFmsWluzy2Lpd8M6puOi1-hgoKwRVmZc/exec';
+
 function callApi(action, data) {
   return new Promise((resolve, reject) => {
+    // 🆕 v7.5: ตรวจสอบว่ายังอยู่ใน Apps Script HTML Service (มี google.script.run) หรือไม่
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      // โหมดเก่า: เปิดผ่าน script.google.com
+      const payload = Object.assign({ action: action, token: currentToken }, data || {});
+      google.script.run
+        .withSuccessHandler(result => {
+          try {
+            const parsed = (typeof result === 'string') ? JSON.parse(result) : result;
+            resolve(parsed);
+          } catch (e) {
+            resolve({ success: false, error: 'parse error: ' + (result || '').substring(0, 200) });
+          }
+        })
+        .withFailureHandler(err => reject(err))
+        .handleAdminActionFromHtml(payload);
+      return;
+    }
+
+    // 🆕 โหมดใหม่: เปิดผ่าน GitHub Pages → ใช้ fetch ไปที่ Apps Script Web App
+    if (!GOOGLE_SCRIPT_URL || !GOOGLE_SCRIPT_URL.startsWith('http')) {
+      resolve({ success: false, error: 'ยังไม่ได้ตั้งค่า Apps Script URL' });
+      return;
+    }
+
     const payload = Object.assign({ action: action, token: currentToken }, data || {});
-    google.script.run
-      .withSuccessHandler(result => {
-        try {
-          // result เป็น JSON string ที่ได้จาก ContentService.getContent()
-          const parsed = (typeof result === 'string') ? JSON.parse(result) : result;
-          resolve(parsed);
-        } catch (e) {
-          resolve({ success: false, error: 'parse error: ' + (result || '').substring(0, 200) });
-        }
-      })
-      .withFailureHandler(err => reject(err))
-      .handleAdminActionFromHtml(payload);
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    })
+      .then(res => res.json())
+      .then(result => resolve(result))
+      .catch(err => {
+        console.error('callApi fetch error:', err);
+        reject(err);
+      });
   });
 }
 
