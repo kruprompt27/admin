@@ -1056,6 +1056,180 @@ body {
   margin-bottom: 8px;
   padding: 0 4px;
 }
+
+/* ============================================================
+   🆕 v7.5: Top Subjects Card (Stats Tab)
+   ============================================================ */
+.top-subjects-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-sm);
+  margin-top: 14px;
+}
+.top-subjects-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.top-subjects-title {
+  font-size: 15px; font-weight: 700; color: var(--text-primary);
+}
+.top-refresh-btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  width: 34px; height: 34px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-family: inherit;
+}
+.top-refresh-btn:hover { background: var(--color-primary); color: white; }
+
+.top-subjects-list .top-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-elevated);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border-default);
+}
+.top-subjects-list .top-row:last-child { margin-bottom: 0; }
+.top-rank {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px;
+  background: var(--color-primary); color: white;
+  flex-shrink: 0;
+}
+.top-rank.gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.top-rank.silver { background: linear-gradient(135deg, #cbd5e1, #94a3b8); }
+.top-rank.bronze { background: linear-gradient(135deg, #f97316, #c2410c); }
+.top-subject-name {
+  flex: 1; min-width: 0;
+  font-weight: 600; font-size: 13px; color: var(--text-primary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.top-subject-count {
+  background: var(--color-primary);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.top-empty {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ============================================================
+   🆕 v7.5: Customers Tab
+   ============================================================ */
+.customers-header-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 14px;
+}
+.customers-title {
+  font-size: 15px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.customers-count {
+  font-size: 12px; color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.customer-dropdown {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-input);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.customer-dropdown:focus {
+  outline: none; border-color: var(--color-primary);
+}
+
+.customer-summary-card {
+  background: var(--gradient-card-2);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-default);
+}
+.customer-summary-name {
+  font-size: 15px; font-weight: 700; color: var(--color-primary-dark);
+  margin-bottom: 6px;
+}
+.customer-summary-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.customer-summary-row .label { color: var(--text-secondary); }
+.customer-summary-row .value { font-weight: 700; color: var(--text-primary); }
+
+.history-order-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border-default);
+}
+.history-order-card .head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px;
+}
+.history-order-card .order-id {
+  font-weight: 700; font-size: 13px; color: var(--text-primary);
+}
+.history-order-card .order-date {
+  font-size: 11px; color: var(--text-muted);
+}
+.history-order-card .items-preview {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 6px 0;
+  white-space: pre-line;
+}
+.history-order-card .foot {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-default);
+}
+.history-order-card .status-tag {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+.history-order-card .amount {
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  font-size: 14px;
+}
+.history-order-card .status-completed { background: #d1fae5; color: #065f46; }
+.history-order-card .status-paid { background: #dbeafe; color: #1e40af; }
+.history-order-card .status-pending { background: #fef3c7; color: #92400e; }
+.history-order-card .status-cancelled { background: #fee2e2; color: #991b1b; }
+[data-theme="dark"] .history-order-card .status-completed { background: #065f46; color: #d1fae5; }
+[data-theme="dark"] .history-order-card .status-paid { background: #1e40af; color: #dbeafe; }
+[data-theme="dark"] .history-order-card .status-pending { background: #78350f; color: #fef3c7; }
+[data-theme="dark"] .history-order-card .status-cancelled { background: #7f1d1d; color: #fee2e2; }
 </style>
 </head>
 <body>
@@ -1121,37 +1295,8 @@ body {
 
     <!-- 🆕 v7.5: Tab Panels -->
 
-    <!-- 🏠 Tab: Home (Dashboard) -->
-    <div class="tab-panel active" id="tab-home">
-      <!-- 🆕 Mini Dashboard -->
-      <div class="mini-dashboard" id="miniDashboard">
-        <div class="mini-stat" id="statToday">
-          <div class="mini-stat-icon">☀️</div>
-          <div class="mini-stat-info">
-            <div class="mini-stat-label">ยอดวันนี้</div>
-            <div class="mini-stat-value">฿0</div>
-            <div class="mini-stat-sub">0 ออเดอร์</div>
-          </div>
-        </div>
-        <div class="mini-stat" id="statMonth">
-          <div class="mini-stat-icon">🗓️</div>
-          <div class="mini-stat-info">
-            <div class="mini-stat-label">ยอดเดือนนี้</div>
-            <div class="mini-stat-value">฿0</div>
-            <div class="mini-stat-sub">0 ออเดอร์</div>
-          </div>
-        </div>
-      </div>
-
-      <div style="text-align:center; padding:32px 16px; color:var(--text-muted);">
-        <div style="font-size:48px; margin-bottom:8px;">🎓</div>
-        <p style="font-size:14px;">เลือกเมนูด้านล่างเพื่อเริ่มใช้งาน</p>
-        <p style="font-size:12px; margin-top:4px;">หรือดู Quick Stats ด้านบน</p>
-      </div>
-    </div>
-
-    <!-- 🛒 Tab: Orders -->
-    <div class="tab-panel" id="tab-orders">
+    <!-- 🛒 Tab: Orders (default - แสดงเป็นอันแรก) -->
+    <div class="tab-panel active" id="tab-orders">
       <div class="filter-tabs" id="filterTabs">
         <button class="filter-tab active" data-filter="pending">
           <span class="filter-tab-label">รอชำระเงิน</span>
@@ -1173,6 +1318,41 @@ body {
 
       <div id="ordersList" class="orders-list">
         <div class="loading"><div class="spinner"></div><div>กำลังโหลด...</div></div>
+      </div>
+    </div>
+
+    <!-- 📊 Tab: Stats (Mini Dashboard + Top 5 ขายดี) -->
+    <div class="tab-panel" id="tab-stats">
+      <div class="mini-dashboard" id="miniDashboard">
+        <div class="mini-stat" id="statToday">
+          <div class="mini-stat-icon">☀️</div>
+          <div class="mini-stat-info">
+            <div class="mini-stat-label">ยอดวันนี้</div>
+            <div class="mini-stat-value">฿0</div>
+            <div class="mini-stat-sub">0 ออเดอร์</div>
+          </div>
+        </div>
+        <div class="mini-stat" id="statMonth">
+          <div class="mini-stat-icon">🗓️</div>
+          <div class="mini-stat-info">
+            <div class="mini-stat-label">ยอดเดือนนี้</div>
+            <div class="mini-stat-value">฿0</div>
+            <div class="mini-stat-sub">0 ออเดอร์</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🆕 v7.5: Top 5 วิชาขายดีวันนี้ -->
+      <div class="top-subjects-card">
+        <div class="top-subjects-header">
+          <div class="top-subjects-title">🏆 Top 5 วิชาขายดีวันนี้</div>
+          <button class="top-refresh-btn" onclick="loadTopSubjects()" title="รีเฟรช">🔄</button>
+        </div>
+        <div id="topSubjectsList" class="top-subjects-list">
+          <div style="text-align:center; padding:24px; color:var(--text-muted); font-size:13px;">
+            กำลังโหลด...
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1201,13 +1381,21 @@ body {
       </div>
     </div>
 
-    <!-- 👥 Tab: Customers -->
+    <!-- 👥 Tab: Customers (พร้อม Dropdown + ประวัติ) -->
     <div class="tab-panel" id="tab-customers">
-      <div style="text-align:center; padding:48px 16px; color:var(--text-muted);">
-        <div style="font-size:48px; margin-bottom:12px;">👥</div>
-        <p style="font-size:14px; font-weight:600; margin-bottom:8px;">ลูกค้าทั้งหมด</p>
-        <p style="font-size:12px;">ฟีเจอร์นี้กำลังพัฒนา — เร็วๆ นี้</p>
-        <p style="font-size:11px; margin-top:8px;">ดูประวัติลูกค้าจาก "📊 รายงาน → ประวัติลูกค้า"</p>
+      <div class="customers-header-card">
+        <div class="customers-title">👥 ลูกค้าทั้งหมด</div>
+        <div class="customers-count" id="customersCount">กำลังโหลด...</div>
+        <select id="customerSelect" class="customer-dropdown" onchange="onCustomerSelected()">
+          <option value="">— เลือกลูกค้า —</option>
+        </select>
+        <button class="top-refresh-btn" onclick="loadCustomerList()" title="รีเฟรชรายชื่อ" style="margin-top:8px;">🔄 รีเฟรชรายชื่อ</button>
+      </div>
+
+      <div id="customerDetail" class="customer-detail-area">
+        <div style="text-align:center; padding:32px 16px; color:var(--text-muted); font-size:13px;">
+          เลือกลูกค้าจาก dropdown ด้านบนเพื่อดูประวัติการสั่งซื้อ
+        </div>
       </div>
     </div>
 
@@ -1276,14 +1464,14 @@ body {
 
   <!-- 🆕 v7.5: Bottom Navigation -->
   <nav class="bottom-nav">
-    <button class="bottom-nav-item active" data-tab="home" onclick="switchTab('home')">
-      <span class="icon">🏠</span>
-      <span class="label">หน้าหลัก</span>
-    </button>
-    <button class="bottom-nav-item" data-tab="orders" onclick="switchTab('orders')">
+    <button class="bottom-nav-item active" data-tab="orders" onclick="switchTab('orders')">
       <span class="icon">🛒</span>
       <span class="label">ออเดอร์</span>
       <span class="nav-badge hidden" id="navBadgeOrders">0</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="stats" onclick="switchTab('stats')">
+      <span class="icon">📊</span>
+      <span class="label">สรุปยอด</span>
     </button>
     <button class="bottom-nav-item" data-tab="calendar" onclick="switchTab('calendar')">
       <span class="icon">📅</span>
@@ -1352,7 +1540,7 @@ let lastOrdersHash = '';
 let pwaState = {
   installPromptEvent: null,
   isInstalled: false,
-  currentTab: 'home',
+  currentTab: 'orders',  // 🆕 v7.5: เริ่มต้นที่หน้าออเดอร์
   // Theme
   theme: localStorage.getItem('kp_theme') || 'light',
   // Sound
@@ -1365,7 +1553,10 @@ let pwaState = {
   calSelectedDate: null,
   // Bulk
   bulkMode: false,
-  bulkSelected: new Set()
+  bulkSelected: new Set(),
+  // 🆕 v7.5: Customers
+  customers: [],
+  customersLoaded: false
 };
 
 // ============ 🆕 v7.5: PWA - Service Worker ============
@@ -1444,7 +1635,149 @@ function switchTab(tabName) {
 
   // Lazy load tab content
   if (tabName === 'calendar') renderCalendar();
+  if (tabName === 'stats') loadTopSubjects();
+  if (tabName === 'customers') {
+    if (!pwaState.customersLoaded) loadCustomerList();
+  }
   if (tabName === 'orders' && allOrders.length === 0) loadOrders();
+}
+
+// ============ 🆕 v7.5: Top 5 Subjects (Stats Tab) ============
+async function loadTopSubjects() {
+  const listEl = document.getElementById('topSubjectsList');
+  if (!listEl) return;
+  listEl.innerHTML = '<div class="top-empty">⏳ กำลังโหลด...</div>';
+
+  try {
+    const res = await callApi('getTopSubjectsToday', {});
+    if (!res.success) {
+      listEl.innerHTML = '<div class="top-empty">❌ โหลดไม่สำเร็จ: ' + (res.error || '') + '</div>';
+      return;
+    }
+    const top = res.topSubjects || [];
+    if (top.length === 0) {
+      listEl.innerHTML = '<div class="top-empty">📭 ยังไม่มีออเดอร์วันนี้</div>';
+      return;
+    }
+    const rankClass = ['gold', 'silver', 'bronze', '', ''];
+    listEl.innerHTML = top.map((s, i) => {
+      const icon = s.isExtra ? (s.name.indexOf('VIP') !== -1 ? '👑' : '💼') : '📚';
+      return `
+        <div class="top-row">
+          <div class="top-rank ${rankClass[i] || ''}">${i + 1}</div>
+          <div class="top-subject-name">${icon} ${escapeHtml(s.name)}</div>
+          <div class="top-subject-count">${s.count} ครั้ง</div>
+        </div>
+      `;
+    }).join('');
+  } catch (e) {
+    listEl.innerHTML = '<div class="top-empty">❌ Error: ' + e.message + '</div>';
+  }
+}
+
+// ============ 🆕 v7.5: Customer List & History ============
+async function loadCustomerList() {
+  const sel = document.getElementById('customerSelect');
+  const countEl = document.getElementById('customersCount');
+  if (!sel) return;
+
+  sel.innerHTML = '<option value="">⏳ กำลังโหลด...</option>';
+  countEl.textContent = 'กำลังโหลด...';
+
+  try {
+    const res = await callApi('listCustomers', {});
+    if (!res.success) {
+      sel.innerHTML = '<option value="">❌ โหลดไม่สำเร็จ</option>';
+      countEl.textContent = res.error || 'Error';
+      return;
+    }
+    pwaState.customers = res.customers || [];
+    pwaState.customersLoaded = true;
+
+    countEl.textContent = `ทั้งหมด ${pwaState.customers.length} คน`;
+    sel.innerHTML = '<option value="">— เลือกลูกค้า —</option>' +
+      pwaState.customers.map(c =>
+        `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)} (${c.orderCount} ออเดอร์ • ฿${formatNum(c.totalAmount)})</option>`
+      ).join('');
+  } catch (e) {
+    sel.innerHTML = '<option value="">❌ Error</option>';
+    countEl.textContent = e.message;
+  }
+}
+
+async function onCustomerSelected() {
+  const sel = document.getElementById('customerSelect');
+  const detail = document.getElementById('customerDetail');
+  const name = sel.value;
+
+  if (!name) {
+    detail.innerHTML = '<div style="text-align:center; padding:32px 16px; color:var(--text-muted); font-size:13px;">เลือกลูกค้าจาก dropdown ด้านบนเพื่อดูประวัติการสั่งซื้อ</div>';
+    return;
+  }
+
+  detail.innerHTML = '<div style="text-align:center; padding:24px; color:var(--text-muted);">⏳ กำลังโหลดประวัติ...</div>';
+
+  try {
+    const res = await callApi('getCustomerHistory', { customerName: name });
+    if (!res.success) {
+      detail.innerHTML = '<div style="text-align:center; padding:24px; color:var(--color-danger);">❌ ' + (res.error || 'โหลดไม่สำเร็จ') + '</div>';
+      return;
+    }
+
+    const summary = res.summary || {};
+    const history = res.history || [];
+
+    let html = `
+      <div class="customer-summary-card">
+        <div class="customer-summary-name">${escapeHtml(summary.customerName || name)}</div>
+        <div class="customer-summary-row">
+          <span class="label">📦 จำนวนออเดอร์</span>
+          <span class="value">${summary.totalOrders || 0} ครั้ง</span>
+        </div>
+        <div class="customer-summary-row">
+          <span class="label">💰 ยอดรวมทั้งหมด</span>
+          <span class="value">฿${formatNum(summary.totalAmount || 0)}</span>
+        </div>
+      </div>
+    `;
+
+    if (history.length === 0) {
+      html += '<div style="text-align:center; padding:24px; color:var(--text-muted); font-size:13px;">📭 ไม่มีประวัติการสั่งซื้อ</div>';
+    } else {
+      html += '<div style="font-size:13px; font-weight:700; color:var(--text-secondary); margin:14px 4px 8px;">📜 ประวัติการสั่งซื้อ (' + history.length + ' รายการ)</div>';
+      history.forEach(h => {
+        const itemsPreview = (h.items || '').split('\n').slice(0, 5).join('\n');
+        const moreCount = (h.items || '').split('\n').length - 5;
+        const statusClass = getHistoryStatusClass(h.status);
+        html += `
+          <div class="history-order-card">
+            <div class="head">
+              <span class="order-id">${escapeHtml(h.orderId)}</span>
+              <span class="order-date">${escapeHtml(h.timestamp)}</span>
+            </div>
+            <div class="items-preview">${escapeHtml(itemsPreview)}${moreCount > 0 ? '\n... และอีก ' + moreCount + ' รายการ' : ''}</div>
+            <div class="foot">
+              <span class="status-tag ${statusClass}">${escapeHtml(h.status || '-')}</span>
+              <span class="amount">฿${formatNum(h.netTotal)}</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    detail.innerHTML = html;
+  } catch (e) {
+    detail.innerHTML = '<div style="text-align:center; padding:24px; color:var(--color-danger);">❌ ' + e.message + '</div>';
+  }
+}
+
+function getHistoryStatusClass(status) {
+  const s = String(status || '').trim();
+  if (s === 'ส่งแล้ว') return 'status-completed';
+  if (s === 'ชำระแล้ว') return 'status-paid';
+  if (s === 'รอชำระเงิน') return 'status-pending';
+  if (s === 'ยกเลิก') return 'status-cancelled';
+  return 'status-pending';
 }
 
 // ============ 🆕 v7.5: Theme (Dark Mode) ============
