@@ -1799,14 +1799,53 @@ function toggleTheme() {
 }
 
 // ============ 🆕 v7.5: Sound Alert (Feature B) ============
+// 🔊 AudioContext ต้อง init หลัง user interaction (browser autoplay policy)
+let _audioCtx = null;
+let _audioUnlocked = false;
+
+function unlockAudio() {
+  if (_audioUnlocked) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!_audioCtx) _audioCtx = new AC();
+    // resume context (จำเป็นบน iOS/บางครั้ง Android)
+    if (_audioCtx.state === 'suspended') {
+      _audioCtx.resume();
+    }
+    // เล่นเสียงเงียบเพื่อ unlock
+    const buffer = _audioCtx.createBuffer(1, 1, 22050);
+    const source = _audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(_audioCtx.destination);
+    source.start(0);
+    _audioUnlocked = true;
+    console.log('🔓 Audio unlocked');
+  } catch (e) {
+    console.warn('Audio unlock failed:', e);
+  }
+}
+
+// Unlock เมื่อ user tap ที่ใดก็ตามครั้งแรก
+document.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
+document.addEventListener('click', unlockAudio, { once: true });
+document.addEventListener('keydown', unlockAudio, { once: true });
+
 function playSoundEffect(type) {
   if (!pwaState.soundEnabled && type !== 'preview') return;
 
   try {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-    const ctx = new AC();
-    const soundType = (type === 'preview') ? pwaState.soundType : pwaState.soundType;
+    // Ensure audio is unlocked
+    unlockAudio();
+    if (!_audioCtx) {
+      console.warn('AudioContext not available');
+      return;
+    }
+    const ctx = _audioCtx;
+    // Resume ถ้าถูก suspend
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const soundType = pwaState.soundType;
 
     if (soundType === 'bell') {
       // กระดิ่ง: 2 โน้ตสั้นๆ
@@ -1823,7 +1862,7 @@ function playSoundEffect(type) {
         osc.stop(ctx.currentTime + i * 0.15 + 0.4);
       });
     } else if (soundType === 'coin') {
-      // เสียงเงิน: คล้ายเหรียญร่วง (sawtooth สูง-ลง)
+      // เสียงเงิน: คล้ายเหรียญร่วง
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.frequency.setValueAtTime(1400, ctx.currentTime);
@@ -1833,17 +1872,19 @@ function playSoundEffect(type) {
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
       osc.connect(gain); gain.connect(ctx.destination);
       osc.start(); osc.stop(ctx.currentTime + 0.3);
-      // โน้ตที่ 2 (เพิ่มมิติ)
+      // โน้ตที่ 2
       setTimeout(() => {
-        const o2 = ctx.createOscillator();
-        const g2 = ctx.createGain();
-        o2.frequency.setValueAtTime(1800, ctx.currentTime);
-        o2.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.15);
-        o2.type = 'triangle';
-        g2.gain.setValueAtTime(0.2, ctx.currentTime);
-        g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-        o2.connect(g2); g2.connect(ctx.destination);
-        o2.start(); o2.stop(ctx.currentTime + 0.3);
+        try {
+          const o2 = ctx.createOscillator();
+          const g2 = ctx.createGain();
+          o2.frequency.setValueAtTime(1800, ctx.currentTime);
+          o2.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.15);
+          o2.type = 'triangle';
+          g2.gain.setValueAtTime(0.2, ctx.currentTime);
+          g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+          o2.connect(g2); g2.connect(ctx.destination);
+          o2.start(); o2.stop(ctx.currentTime + 0.3);
+        } catch(e) {}
       }, 80);
     } else if (soundType === 'chime') {
       // ทำนอง: 3 โน้ตเรียง (C-E-G)
@@ -1860,6 +1901,7 @@ function playSoundEffect(type) {
         osc.stop(ctx.currentTime + i * 0.12 + 0.5);
       });
     }
+    console.log('🔊 Played sound:', soundType);
   } catch (e) {
     console.warn('Sound playback failed:', e);
   }
