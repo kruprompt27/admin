@@ -3,7 +3,7 @@
  * - App shell (HTML/ไอคอน/manifest): Cache-First
  * - การเรียก Apps Script: Network-only (ข้อมูลสดเสมอ)
  */
-const CACHE_VERSION = 'krupromsorn-v1.1.0';
+const CACHE_VERSION = 'krupromsorn-v1.2.0';
 const CACHE_NAME = `${CACHE_VERSION}-cache`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -46,11 +46,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // หน้า HTML ใช้ network-first เสมอ → อัปเดตเวอร์ชันใหม่แล้วเห็นทันที (ออฟไลน์ค่อยใช้ cache)
+  if (request.mode === 'navigate' ||
+      request.destination === 'document' ||
+      url.pathname.endsWith('.html')) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
   if (request.destination === 'image' ||
       request.destination === 'font' ||
       request.destination === 'style' ||
       request.destination === 'script' ||
-      url.pathname.endsWith('.html') ||
       url.pathname.endsWith('.json')) {
     event.respondWith(cacheFirst(request));
     return;
