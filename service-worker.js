@@ -3,7 +3,7 @@
  * - App shell (HTML/ไอคอน/manifest): Cache-First
  * - การเรียก Apps Script: Network-only (ข้อมูลสดเสมอ)
  */
-const CACHE_VERSION = 'krupromsorn-v1.2.0';
+const CACHE_VERSION = 'krupromsorn-v1.3.0';
 const CACHE_NAME = `${CACHE_VERSION}-cache`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 

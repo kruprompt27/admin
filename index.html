@@ -18,30 +18,27 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { font-family: 'Sarabun', sans-serif; }
+  /* ── ฟอนต์ใหญ่ขึ้น เหมาะกับแอปมือถือ ── */
+  html { font-size: 22px; }
+  body { font-size: 1rem; }
   .brand-grad { background: linear-gradient(135deg,#818cf8,#a78bfa,#f0abfc); }
-  .dot-online { width:8px; height:8px; border-radius:50%; background:#22c55e; animation: blink 1.4s infinite; }
-  @keyframes blink { 0%,100%{opacity:1; box-shadow:0 0 0 0 rgba(34,197,94,.5);} 50%{opacity:.35; box-shadow:0 0 0 5px rgba(34,197,94,0);} }
-  .tab-btn { white-space:nowrap; }
-  .tab-btn.active { background:linear-gradient(135deg,#818cf8,#a78bfa); color:#fff; box-shadow:0 4px 12px rgba(129,140,248,.4); }
-  /* ขยายฟอนต์ทั้งแอป (ปรับฐาน rem + ขนาดจิ๋วที่ fix เป็น px) */
-  html { font-size: 20px; }
-  .text-\[10px\] { font-size: 14.5px !important; }
-  .text-\[11px\] { font-size: 16px !important; }
+  .dot-online { width:9px; height:9px; border-radius:50%; background:#22c55e; animation: blink 1.4s infinite; }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.35;} }
   input, select, textarea { font-size: 1rem !important; }
   .bnav { color:#9ca3af; }
   .bnav.active { color:#7c3aed; }
-  .chip.active { background:#6d28d9; color:#fff; border-color:#6d28d9; }
-  .spinner { width:46px; height:46px; border:5px solid #e9d5ff; border-top-color:#7c3aed; border-radius:50%; animation:spin .8s linear infinite; }
+  /* ชิปกรองสถานะ — ปุ่มใหญ่กดง่าย */
+  .chip { border:2px solid #e5e7eb; background:#fff; color:#6b7280; font-weight:800; border-radius:9999px; padding:.5rem 1rem; white-space:nowrap; font-size:.9rem; }
+  .chip.active { background:#6d28d9; color:#fff; border-color:#6d28d9; box-shadow:0 4px 12px rgba(109,40,217,.35); }
+  .spinner { width:52px; height:52px; border:6px solid #e9d5ff; border-top-color:#7c3aed; border-radius:50%; animation:spin .8s linear infinite; }
   @keyframes spin { to{ transform:rotate(360deg);} }
   .toast { animation: toastIn .25s ease; }
   @keyframes toastIn { from{ transform:translateY(16px); opacity:0;} to{ transform:translateY(0); opacity:1;} }
-  @media print { .no-print { display:none !important; } }
+  ::-webkit-scrollbar { height:6px; width:6px; } ::-webkit-scrollbar-thumb { background:#ddd6fe; border-radius:9px; }
 </style>
 </head>
 <body class="bg-gradient-to-br from-violet-50 via-fuchsia-50 to-sky-50 min-h-screen text-gray-800">
@@ -49,166 +46,157 @@
 <!-- ░░ Loading Overlay ░░ -->
 <div id="loading" class="hidden fixed inset-0 bg-white/70 backdrop-blur-sm z-[100] flex flex-col items-center justify-center gap-3">
   <div class="spinner"></div>
-  <div class="text-sm font-semibold text-violet-700">กำลังเชื่อมต่อ Google Sheets…</div>
+  <div class="text-base font-bold text-violet-700">กำลังเชื่อมต่อ…</div>
 </div>
 
 <!-- ░░ Toast ░░ -->
-<div id="toastBox" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[110] flex flex-col gap-2 items-center w-[92%] max-w-md"></div>
+<div id="toastBox" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] flex flex-col gap-2 items-center w-[92%] max-w-md"></div>
 
-<div class="max-w-5xl mx-auto px-3 sm:px-5 pb-36">
+<div class="max-w-3xl mx-auto px-3 sm:px-5 pb-32">
 
   <!-- ░░ Header ░░ -->
   <header class="brand-grad text-white shadow-md px-4 py-3 flex items-center justify-between sticky top-0 z-40 -mx-3 sm:-mx-5">
-    <div class="font-extrabold text-base sm:text-lg">🎓 ครูพร้อมสอน</div>
+    <div>
+      <div class="font-extrabold text-lg leading-tight">🎓 ครูพร้อมสอน</div>
+      <div class="flex items-center gap-1.5 text-[.62rem] opacity-90"><span class="dot-online"></span> เชื่อมต่อ Google Sheets</div>
+    </div>
     <div class="flex items-center gap-2">
-      <span id="hdrWho" class="text-xs sm:text-sm font-bold opacity-95"></span>
-      <button onclick="logoutAdmin()" title="ออกจากระบบ" class="bg-white/20 hover:bg-white/30 rounded-full w-8 h-8 text-sm font-bold">⏻</button>
+      <span id="hdrWho" class="text-sm font-bold opacity-95"></span>
+      <button onclick="logoutAdmin()" title="ออกจากระบบ" class="bg-white/20 hover:bg-white/30 rounded-full w-9 h-9 text-base font-bold">⏻</button>
     </div>
   </header>
 
-  <!-- ░░ Tabs ░░ -->
-  
-
-  <!-- ════════════ 📬 ออเดอร์ที่ต้องส่ง ════════════ -->
-  <section id="tab-tosend" class="tab-page mt-4">
+  <!-- ════════════ 📦 รายการออเดอร์ ════════════ -->
+  <section id="tab-orders" class="tab-page mt-4">
     <div class="bg-white rounded-2xl shadow-sm border border-violet-100 p-4">
-      <h2 class="font-extrabold text-violet-800">📬 ออเดอร์ที่ต้องส่ง</h2>
-      <div class="text-[11px] text-gray-500 mt-0.5">รายการที่ชำระเงินแล้ว รอส่งแผน</div>
-      <div id="tosendList" class="mt-3 space-y-3"></div>
-    </div>
-  </section>
-
-  <!-- ════════════ 📦 จัดการคำสั่งซื้อ (แอดมิน) ════════════ -->
-  <section id="tab-orders" class="tab-page hidden mt-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-violet-100 p-4">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <h2 class="font-extrabold text-violet-800">📦 จัดการคำสั่งซื้อ <span id="ordersScope" class="text-[11px] text-amber-600 font-semibold"></span></h2>
-        <div class="flex gap-2 flex-wrap">
-          <select id="orderMonth" onchange="renderOrders()" class="border border-violet-200 rounded-lg px-2 py-1.5 text-xs font-semibold">
-            <option value="">ทุกเดือน</option>
-          </select>
-          <select id="orderFilter" onchange="renderOrders()" class="border border-violet-200 rounded-lg px-2 py-1.5 text-xs font-semibold">
-            <option>ทั้งหมด</option><option>รอชำระเงิน</option><option>ชำระเงินแล้ว</option>
-            <option>อนุมัติส่งแผน</option><option>ส่งแผนเสร็จสิ้น</option><option>ยกเลิก</option>
-          </select>
-          <button onclick="loadOrders()" class="text-xs font-bold bg-violet-100 text-violet-700 rounded-lg px-3 py-1.5">🔄 รีเฟรช</button>
-        </div>
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="font-extrabold text-violet-800 text-lg">📦 รายการออเดอร์ <span id="ordersScope" class="text-xs text-amber-600 font-semibold"></span></h2>
+        <button onclick="loadOrders()" class="text-sm font-bold bg-violet-100 text-violet-700 rounded-xl px-3 py-2">🔄</button>
       </div>
-      <input id="orderSearch" oninput="renderOrders()" placeholder="🔎 ค้นหา เลขออเดอร์ / ชื่อ / อีเมล…" class="mt-3 w-full sm:w-72 border border-violet-200 rounded-lg px-3 py-1.5 text-sm">
+
+      <!-- ชิปกรองสถานะ -->
+      <div class="flex gap-2 overflow-x-auto mt-3 pb-1 -mx-1 px-1">
+        <button class="chip active" data-f="ชำระเงินแล้ว" onclick="setOrderFilter('ชำระเงินแล้ว')">💳 ชำระเงินแล้ว <span class="cnt"></span></button>
+        <button class="chip" data-f="รอชำระ" onclick="setOrderFilter('รอชำระ')">⏳ รอชำระ <span class="cnt"></span></button>
+        <button class="chip" data-f="ส่งแผนเสร็จสิ้น" onclick="setOrderFilter('ส่งแผนเสร็จสิ้น')">✅ ส่งเสร็จสิ้น <span class="cnt"></span></button>
+        <button class="chip" data-f="ยกเลิก" onclick="setOrderFilter('ยกเลิก')">🚫 ยกเลิก <span class="cnt"></span></button>
+      </div>
+
+      <input id="orderSearch" oninput="renderOrders()" placeholder="🔎 ค้นหา เลขออเดอร์ / ชื่อ / อีเมล…" class="mt-3 w-full border-2 border-violet-100 rounded-xl px-4 py-2.5 text-base">
       <div id="orderList" class="mt-3 space-y-3"></div>
     </div>
   </section>
 
-  <!-- ════════════ 👥 ลูกค้า (เจ้าของระบบ) ════════════ -->
+  <!-- ════════════ 👥 ประวัติลูกค้า (เจ้าของ) ════════════ -->
   <section id="tab-customers" class="tab-page hidden mt-4">
     <div class="bg-white rounded-2xl shadow-sm border border-violet-100 p-4">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <h2 class="font-extrabold text-violet-800">👥 ประวัติลูกค้า <span id="custCount" class="text-xs text-gray-400 font-semibold"></span></h2>
-        <button onclick="loadCustomers()" class="text-xs font-bold bg-violet-100 text-violet-700 rounded-lg px-3 py-1.5">🔄 รีเฟรช</button>
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="font-extrabold text-violet-800 text-lg">👥 ประวัติลูกค้า <span id="custCount" class="text-sm text-gray-400 font-semibold"></span></h2>
+        <button onclick="loadCustomers()" class="text-sm font-bold bg-violet-100 text-violet-700 rounded-xl px-3 py-2">🔄</button>
       </div>
-      <input id="custSearch" oninput="renderCustomers()" placeholder="🔎 ค้นหาชื่อ / อีเมล…" class="mt-3 w-full sm:w-72 border border-violet-200 rounded-lg px-3 py-1.5 text-sm">
+      <input id="custSearch" oninput="renderCustomers()" placeholder="🔎 ค้นหาชื่อ / อีเมล…" class="mt-3 w-full border-2 border-violet-100 rounded-xl px-4 py-2.5 text-base">
       <div id="custList" class="mt-3 space-y-2"></div>
     </div>
   </section>
 
-  <!-- ════════════ 📊 รายงานสรุป (แอดมิน) ════════════ -->
-  <section id="tab-report" class="tab-page hidden mt-4 space-y-4">
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="reportCards"></div>
-    <div class="bg-white rounded-2xl shadow-sm border border-violet-100 p-4">
-      <h3 class="font-extrabold text-violet-800 text-sm">📈 ยอดขาย 30 วันล่าสุด (เฉพาะออเดอร์สำเร็จ)</h3>
-      <canvas id="dailyChart" height="120"></canvas>
-    </div>
-    <div class="bg-white rounded-2xl shadow-sm border border-violet-100 p-4">
-      <h3 class="font-extrabold text-violet-800 text-sm">🏆 วิชาขายดี 10 อันดับ</h3>
-      <div id="topSubjects" class="mt-3 space-y-2 text-sm"></div>
-    </div>
-  </section>
-
-  <!-- ════════════ ⚙️ ตั้งค่าระบบ (แอดมิน) ════════════ -->
+  <!-- ════════════ ⚙️ ตั้งค่าระบบ (เจ้าของ) ════════════ -->
   <section id="tab-settings" class="tab-page hidden mt-4">
     <div class="bg-white rounded-2xl shadow-sm border border-violet-100 p-4">
-      <h2 class="font-extrabold text-violet-800">⚙️ ตั้งค่าระบบ</h2>
+      <h2 class="font-extrabold text-violet-800 text-lg">⚙️ ตั้งค่าระบบ</h2>
       <div class="grid sm:grid-cols-2 gap-3 mt-4">
-        <div><label class="text-xs font-bold text-gray-600">ชื่อเพจ/ร้าน</label><input id="stPageName" class="w-full border rounded-lg px-3 py-2 text-sm mt-1"></div>
-        <div><label class="text-xs font-bold text-gray-600">สโลแกน</label><input id="stSlogan" class="w-full border rounded-lg px-3 py-2 text-sm mt-1"></div>
+        <div><label class="text-sm font-bold text-gray-600">ชื่อเพจ/ร้าน</label><input id="stPageName" class="w-full border rounded-lg px-3 py-2 text-base mt-1"></div>
+        <div><label class="text-sm font-bold text-gray-600">สโลแกน</label><input id="stSlogan" class="w-full border rounded-lg px-3 py-2 text-base mt-1"></div>
         <div id="adminsBlock" class="sm:col-span-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
-          <label class="text-xs font-bold text-gray-700">🔐 บัญชีแอดมิน (เจ้าของระบบแก้ได้คนเดียว)</label>
+          <label class="text-sm font-bold text-gray-700">🔐 บัญชีแอดมิน (เจ้าของระบบแก้ได้คนเดียว)</label>
           <input id="stAdmins" class="w-full border rounded-lg px-3 py-2 text-sm mt-1 font-mono">
-          <div class="text-[11px] text-gray-500 mt-1">รูปแบบ: ชื่อ=PIN:สิทธิ์ คั่นด้วยจุลภาค — สิทธิ์ owner เห็นทุกเมนู / staff เห็นเฉพาะออเดอร์+ตั้งค่า เช่น <code>yui=080766:owner, pinky=1234:staff</code></div>
+          <div class="text-xs text-gray-500 mt-1">รูปแบบ: ชื่อ=PIN:สิทธิ์ คั่นด้วยจุลภาค — owner เห็นทุกเมนู / staff เห็นเฉพาะออเดอร์ เช่น <code>yui=080766:owner, pinky=1234:staff</code></div>
         </div>
-        <div><label class="text-xs font-bold text-gray-600">ชื่อร้านค้า (แสดงใต้ QR ชำระเงิน)</label><input id="stPPName" placeholder="เช่น พร้อมสอน พร้อมสื่อ" class="w-full border rounded-lg px-3 py-2 text-sm mt-1"></div>
-        <div><label class="text-xs font-bold text-gray-600">จำนวนวิชาขั้นต่ำรับส่วนลด</label><input id="stMinItems" type="number" class="w-full border rounded-lg px-3 py-2 text-sm mt-1"></div>
-        <div><label class="text-xs font-bold text-gray-600">ส่วนลด (%)</label><input id="stPct" type="number" class="w-full border rounded-lg px-3 py-2 text-sm mt-1"></div>
-        <div class="sm:col-span-2"><label class="text-xs font-bold text-gray-600">ประกาศหน้าร้าน (เว้นว่าง = ไม่แสดง)</label><input id="stAnnounce" class="w-full border rounded-lg px-3 py-2 text-sm mt-1"></div>
+        <div><label class="text-sm font-bold text-gray-600">ชื่อร้านค้า (แสดงใต้ QR ชำระเงิน)</label><input id="stPPName" placeholder="เช่น พร้อมสอน พร้อมสื่อ" class="w-full border rounded-lg px-3 py-2 text-base mt-1"></div>
+        <div><label class="text-sm font-bold text-gray-600">จำนวนวิชาขั้นต่ำรับส่วนลด</label><input id="stMinItems" type="number" class="w-full border rounded-lg px-3 py-2 text-base mt-1"></div>
+        <div><label class="text-sm font-bold text-gray-600">ส่วนลด (%)</label><input id="stPct" type="number" class="w-full border rounded-lg px-3 py-2 text-base mt-1"></div>
+        <div class="sm:col-span-2"><label class="text-sm font-bold text-gray-600">ประกาศหน้าร้าน (เว้นว่าง = ไม่แสดง)</label><input id="stAnnounce" class="w-full border rounded-lg px-3 py-2 text-base mt-1"></div>
       </div>
       <div class="grid sm:grid-cols-2 gap-3 mt-4">
         <div class="bg-violet-50 rounded-xl p-3">
-          <label class="text-xs font-bold text-gray-600">🖼️ โลโก้เพจ</label>
+          <label class="text-sm font-bold text-gray-600">🖼️ โลโก้เพจ</label>
           <img id="stLogoPreview" class="hidden w-20 h-20 object-contain rounded-lg bg-white border mt-2">
           <input type="file" id="stLogoFile" accept="image/*" class="block w-full text-xs mt-2">
-          <button onclick="uploadSetting('logo')" class="mt-2 text-xs font-bold text-white bg-violet-500 rounded-lg px-3 py-1.5">⬆️ อัปโหลดโลโก้</button>
+          <button onclick="uploadSetting('logo')" class="mt-2 text-sm font-bold text-white bg-violet-500 rounded-lg px-3 py-2">⬆️ อัปโหลดโลโก้</button>
         </div>
         <div class="bg-violet-50 rounded-xl p-3">
-          <label class="text-xs font-bold text-gray-600">📱 QR Code รับชำระเงิน</label>
-          <div class="text-[11px] text-gray-500 mt-0.5">รองรับ Thai QR ร้านค้าจากแอพธนาคาร เช่น Merchant Pro (กรุงเทพ), แม่มณี (SCB), ถุงเงิน ฯลฯ</div>
+          <label class="text-sm font-bold text-gray-600">📱 QR Code รับชำระเงิน</label>
+          <div class="text-xs text-gray-500 mt-0.5">รองรับ Thai QR ร้านค้าจากแอพธนาคาร เช่น Merchant Pro, แม่มณี, ถุงเงิน ฯลฯ</div>
           <img id="stQRPreview" class="hidden w-32 object-contain rounded-lg bg-white border mt-2 mx-auto">
           <input type="file" id="stQRFile" accept="image/*" class="hidden" onchange="uploadSetting('qr')">
-          <button onclick="document.getElementById('stQRFile').click()" class="mt-2 w-full text-xs font-bold text-white bg-green-500 hover:bg-green-600 rounded-lg px-3 py-2 shadow">➕ เพิ่ม / เปลี่ยน QR รับชำระเงิน</button>
+          <button onclick="document.getElementById('stQRFile').click()" class="mt-2 w-full text-sm font-bold text-white bg-green-500 hover:bg-green-600 rounded-lg px-3 py-2 shadow">➕ เพิ่ม / เปลี่ยน QR รับชำระเงิน</button>
         </div>
       </div>
-      <div class="text-[11px] text-gray-500 mt-2">ระบบจะบีบอัดรูปก่อนอัปโหลดเข้า Google Drive แล้วเก็บเป็น URL ในชีต Settings (ป้องกันปัญหา cell limit 50,000 อักขระ)</div>
+      <div class="text-xs text-gray-500 mt-2">ระบบจะบีบอัดรูปก่อนอัปโหลดเข้า Google Drive แล้วเก็บเป็น URL ในชีต Settings (ป้องกันปัญหา cell limit 50,000 อักขระ)</div>
       <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 mt-4">
-        <label class="text-xs font-bold text-gray-700">💬 แจ้งเตือน Telegram (สลิปใหม่ / ส่งแผนสำเร็จ)</label>
+        <label class="text-sm font-bold text-gray-700">💬 แจ้งเตือน Telegram (สลิปใหม่ / ส่งแผนสำเร็จ)</label>
         <div class="grid sm:grid-cols-2 gap-2 mt-2">
-          <div><label class="text-[11px] font-bold text-gray-600">Bot Token (จาก @BotFather)</label><input id="stTgToken" class="w-full border rounded-lg px-2 py-1.5 text-xs mt-1 font-mono"></div>
-          <div><label class="text-[11px] font-bold text-gray-600">Chat ID</label><input id="stTgChat" class="w-full border rounded-lg px-2 py-1.5 text-xs mt-1 font-mono"></div>
+          <div><label class="text-xs font-bold text-gray-600">Bot Token (จาก @BotFather)</label><input id="stTgToken" class="w-full border rounded-lg px-2 py-1.5 text-sm mt-1 font-mono"></div>
+          <div><label class="text-xs font-bold text-gray-600">Chat ID</label><input id="stTgChat" class="w-full border rounded-lg px-2 py-1.5 text-sm mt-1 font-mono"></div>
         </div>
         <div class="flex gap-2 mt-2 flex-wrap">
-          <button onclick="findChatId()" class="text-xs font-bold text-white bg-sky-500 hover:bg-sky-600 rounded-lg px-3 py-1.5">🔍 หา Chat ID</button>
-          <button onclick="testTg()" class="text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg px-3 py-1.5">🔔 ทดสอบส่งแจ้งเตือน</button>
+          <button onclick="findChatId()" class="text-sm font-bold text-white bg-sky-500 hover:bg-sky-600 rounded-lg px-3 py-2">🔍 หา Chat ID</button>
+          <button onclick="testTg()" class="text-sm font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg px-3 py-2">🔔 ทดสอบส่งแจ้งเตือน</button>
         </div>
-        <div class="text-[11px] text-gray-500 mt-2">ขั้นตอน: สร้างบอทกับ @BotFather ใน Telegram → วาง Token → กด 💾 บันทึก → เปิด Telegram ทักหาบอท 1 ข้อความ → กลับมากด "หา Chat ID" → บันทึกอีกครั้ง</div>
+        <div class="text-xs text-gray-500 mt-2">ขั้นตอน: สร้างบอทกับ @BotFather → วาง Token → 💾 บันทึก → ทักบอท 1 ข้อความ → กด "หา Chat ID" → บันทึกอีกครั้ง</div>
       </div>
       <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mt-4">
-        <label class="flex items-center gap-2 text-xs font-bold text-gray-700">
-          <input type="checkbox" id="stAutoSend" class="w-4 h-4 accent-emerald-600">
+        <label class="flex items-center gap-2 text-sm font-bold text-gray-700">
+          <input type="checkbox" id="stAutoSend" class="w-5 h-5 accent-emerald-600">
           🤖 ส่งแผนอัตโนมัติเมื่อยอดสลิปตรง
         </label>
-        <div class="text-[11px] text-gray-500 mt-1.5">เมื่อลูกค้าอัปสลิป ระบบจะอ่านยอดเงินในรูป (OCR) — ยอดตรง → <b>แชร์สิทธิ์ผู้อ่านให้ Gmail ลูกค้า + ส่งแผนทางอีเมลทันที</b> แจ้งผลใน Telegram 🤖✅ | ยอดไม่ตรง/อ่านไม่ได้ → ไม่ส่ง ค้างไว้ที่หน้าต้องส่ง และแจ้ง Telegram ให้ตรวจเอง<br>⚙️ ต้องเปิด Advanced Drive Service ใน Apps Script ก่อน (เมนู Services → Drive API → Add)</div>
+        <div class="text-xs text-gray-500 mt-1.5">เมื่อลูกค้าอัปสลิป ระบบอ่านยอด (OCR) — ยอดตรง → <b>แชร์สิทธิ์ + ส่งแผนทางอีเมลทันที</b> | ยอดไม่ตรง → ค้างไว้ที่ "ชำระเงินแล้ว" แจ้ง Telegram<br>⚙️ ต้องเปิด Advanced Drive Service ก่อน (Services → Drive API → Add)</div>
       </div>
-      <button onclick="saveSettingsForm()" class="mt-4 w-full sm:w-auto bg-violet-600 hover:bg-violet-700 text-white font-extrabold rounded-xl px-8 py-2.5 text-sm shadow">💾 บันทึกการตั้งค่า</button>
+      <button onclick="saveSettingsForm()" class="mt-4 w-full bg-violet-600 hover:bg-violet-700 text-white font-extrabold rounded-xl px-8 py-3 text-base shadow">💾 บันทึกการตั้งค่า</button>
     </div>
   </section>
 
-  <!-- ░░ ปุ่มรีเฟรชลอย ░░ -->
-  <button onclick="refreshCurrent()" title="รีเฟรช" class="no-print fixed bottom-28 right-4 z-40 w-12 h-12 rounded-full brand-grad text-white text-xl shadow-xl hover:scale-105 transition">🔄</button>
-
-  <!-- ░░ เมนูล่างแบบแอป ░░ -->
-  <nav class="no-print fixed bottom-0 left-0 right-0 bg-white border-t border-violet-100 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] z-40">
-    <div class="max-w-5xl mx-auto flex justify-around">
-      <button class="bnav active flex-1 py-3 text-center" data-tab="tosend" onclick="switchTab('tosend')"><div class="text-3xl leading-none">📬</div><div class="text-sm font-extrabold mt-1">ต้องส่ง</div></button>
-      <button class="bnav flex-1 py-3 text-center" data-tab="orders" onclick="switchTab('orders')"><div class="text-3xl leading-none">🛒</div><div class="text-sm font-extrabold mt-1">ออเดอร์</div></button>
-      <button class="bnav flex-1 py-3 text-center" data-tab="report" onclick="switchTab('report')"><div class="text-3xl leading-none">📊</div><div class="text-sm font-extrabold mt-1">สรุปยอด</div></button>
-      <button class="bnav flex-1 py-3 text-center" data-tab="customers" onclick="switchTab('customers')"><div class="text-3xl leading-none">👥</div><div class="text-sm font-extrabold mt-1">ลูกค้า</div></button>
-      <button class="bnav flex-1 py-3 text-center" data-tab="settings" onclick="switchTab('settings')"><div class="text-3xl leading-none">⚙️</div><div class="text-sm font-extrabold mt-1">ตั้งค่า</div></button>
-    </div>
-  </nav>
-
   <!-- ░░ Footer ░░ -->
-  <footer class="text-center text-[11px] text-gray-400 mt-8">
+  <footer class="text-center text-xs text-gray-400 mt-8">
     Copyright © เพจครูพร้อมสอน.
   </footer>
 </div>
+
+<!-- ░░ เมนูล่างแบบแอป (3 เมนู) ░░ -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-violet-100 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] z-40">
+  <div class="max-w-3xl mx-auto flex justify-around">
+    <button class="bnav active flex-1 py-2.5 text-center" data-tab="orders" onclick="switchTab('orders')"><div class="text-3xl leading-none">🛒</div><div class="text-sm font-extrabold mt-0.5">ออเดอร์</div></button>
+    <button class="bnav flex-1 py-2.5 text-center" data-tab="customers" onclick="switchTab('customers')"><div class="text-3xl leading-none">👥</div><div class="text-sm font-extrabold mt-0.5">ลูกค้า</div></button>
+    <button class="bnav flex-1 py-2.5 text-center" data-tab="settings" onclick="switchTab('settings')"><div class="text-3xl leading-none">⚙️</div><div class="text-sm font-extrabold mt-0.5">ตั้งค่า</div></button>
+  </div>
+</nav>
 
 <!-- ░░ หน้าจอล็อกอิน ░░ -->
 <div id="loginScreen" class="fixed inset-0 brand-grad z-[95] flex items-center justify-center p-6">
   <div class="bg-white rounded-3xl shadow-2xl p-7 w-full max-w-xs text-center">
     <div class="text-5xl">🎓</div>
-    <h2 class="font-extrabold text-gray-800 text-lg mt-2">ครูพร้อมสอน Admin</h2>
-    <p class="text-[11px] text-gray-400 mt-0.5">ใส่ PIN เพื่อเข้าใช้งาน</p>
-    <input id="loginPin" type="password" inputmode="numeric" maxlength="8" class="mt-4 w-full text-center text-2xl tracking-widest border-2 border-violet-200 rounded-xl py-2.5 focus:outline-none focus:ring-2 focus:ring-violet-400">
-    <button onclick="doLogin()" class="mt-4 w-full brand-grad text-white font-extrabold rounded-xl py-2.5 text-sm shadow-lg">เข้าสู่ระบบ</button>
-    <div class="text-[11px] text-gray-400 mt-3">ระบบจะจำ PIN ไว้ในเครื่องนี้</div>
+    <h2 class="font-extrabold text-gray-800 text-xl mt-2">ครูพร้อมสอน Admin</h2>
+    <p class="text-xs text-gray-400 mt-0.5">ใส่ PIN เพื่อเข้าใช้งาน</p>
+    <input id="loginPin" type="password" inputmode="numeric" maxlength="8" class="mt-4 w-full text-center text-2xl tracking-widest border-2 border-violet-200 rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-violet-400">
+    <button onclick="doLogin()" class="mt-4 w-full brand-grad text-white font-extrabold rounded-xl py-3 text-base shadow-lg">เข้าสู่ระบบ</button>
+    <div class="text-xs text-gray-400 mt-3">ระบบจะจำ PIN ไว้ในเครื่องนี้</div>
+  </div>
+</div>
+
+<!-- ░░ Modal: แก้ไข Gmail ลูกค้า ░░ -->
+<div id="emailModal" class="hidden fixed inset-0 bg-black/50 z-[92] flex items-center justify-center p-5">
+  <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+    <div class="flex items-start justify-between">
+      <h3 class="font-extrabold text-violet-800 text-lg">✏️ แก้ไข Gmail ลูกค้า</h3>
+      <button onclick="closeEmailModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl leading-none">✕</button>
+    </div>
+    <div class="text-sm text-gray-500 mt-1">ออเดอร์ <b class="text-violet-700">#<span id="emOrderId"></span></b></div>
+    <label class="text-sm font-bold text-gray-600 mt-4 block">Gmail ลูกค้า</label>
+    <input id="emInput" type="email" inputmode="email" class="w-full border-2 border-violet-200 rounded-xl px-4 py-3 text-base mt-1" placeholder="name@gmail.com">
+    <div class="text-xs text-gray-400 mt-1.5">แก้อีเมลที่พิมพ์ผิด แล้วเลือกบันทึก หรือบันทึก + ส่งแผนใหม่ทันที</div>
+    <div class="grid grid-cols-1 gap-2 mt-4">
+      <button onclick="saveEmail(true)" class="w-full bg-green-500 hover:bg-green-600 text-white font-extrabold rounded-xl py-3 text-base shadow">💾 บันทึก + ส่งแผนใหม่</button>
+      <button onclick="saveEmail(false)" class="w-full bg-violet-100 text-violet-700 font-bold rounded-xl py-2.5 text-sm">💾 บันทึกอีเมลอย่างเดียว</button>
+    </div>
   </div>
 </div>
 
@@ -218,7 +206,7 @@
     <div class="flex items-start justify-between">
       <div>
         <h3 class="font-extrabold text-violet-800">👤 <span id="chTitle"></span></h3>
-        <div id="chSub" class="text-[11px] text-gray-500 mt-0.5"></div>
+        <div id="chSub" class="text-xs text-gray-500 mt-0.5"></div>
       </div>
       <button onclick="document.getElementById('custModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 font-bold text-lg leading-none">✕</button>
     </div>
@@ -227,9 +215,7 @@
 </div>
 
 <script>
-/* ============================================================
-   🔧 Core helpers
-============================================================ */
+/* ============================================================ 🔧 Core helpers ============================================================ */
 let loadingCount = 0;
 function showLoading(on){
   loadingCount += on ? 1 : -1;
@@ -239,7 +225,7 @@ function showLoading(on){
 function toast(msg, ok){
   const box = document.getElementById('toastBox');
   const el = document.createElement('div');
-  el.className = 'toast text-xs sm:text-sm font-bold text-white rounded-xl px-4 py-2.5 shadow-lg ' + (ok===false ? 'bg-red-500' : 'bg-emerald-500');
+  el.className = 'toast text-sm font-bold text-white rounded-xl px-4 py-2.5 shadow-lg ' + (ok===false ? 'bg-red-500' : 'bg-emerald-500');
   el.textContent = (ok===false ? '❌ ' : '✅ ') + msg;
   box.appendChild(el);
   setTimeout(()=> el.remove(), 3500);
@@ -252,7 +238,6 @@ async function gs(fn){
   }
   showLoading(true);
   try {
-    // ส่งแบบไม่กำหนด header เพื่อเลี่ยง CORS preflight (แพทเทิร์นมาตรฐานของ GAS)
     const res = await fetch(WEB_APP_URL, { method:'POST', body: JSON.stringify({ fn: fn, args: args }) });
     const data = await res.json();
     showLoading(false);
@@ -287,19 +272,11 @@ function compressImage(file){
   });
 }
 
-/* ============================================================
-   🔐 PIN แอดมิน — ขอครั้งเดียวต่อการเปิดหน้า (ไม่บันทึกลงเครื่อง)
-============================================================ */
-let adminPin = null;
-let adminName = '';
-let adminRole = '';
-// แท็บที่แต่ละสิทธิ์เข้าได้ (staff = pinky เห็นเฉพาะออเดอร์ + ตั้งค่า)
-const TAB_PERMS = { tosend:['owner','staff'], orders:['owner','staff'],
-  settings:['owner'], customers:['owner'], report:['owner'] };
-function canAccess(tab){
-  if (!(tab in TAB_PERMS)) return true; // แท็บสาธารณะ
-  return TAB_PERMS[tab].indexOf(adminRole) >= 0;
-}
+/* ============================================================ 🔐 PIN แอดมิน ============================================================ */
+let adminPin = null, adminName = '', adminRole = '';
+// สิทธิ์: staff (พนักงาน) เห็นเฉพาะออเดอร์ / owner เห็นทุกเมนู
+const TAB_PERMS = { orders:['owner','staff'], customers:['owner'], settings:['owner'] };
+function canAccess(tab){ return !(tab in TAB_PERMS) || TAB_PERMS[tab].indexOf(adminRole) >= 0; }
 function applyRoleUI(){
   document.querySelectorAll('.bnav').forEach(function(b){
     const t = b.dataset.tab;
@@ -312,11 +289,12 @@ function enterApp(){
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('hdrWho').textContent = '• ' + adminName + (adminRole==='staff' ? ' (พนักงาน)' : '');
   applyRoleUI();
-  // ทางลัดจากไอคอนแอป: ?tab=orders&filter=pending|approved
+  // 🔗 ลิงก์ลัดจากไอคอนแอป (PWA shortcut): ?tab=orders&filter=รอชำระ
   const q = new URLSearchParams(location.search);
-  if (q.get('filter') === 'pending') document.getElementById('orderFilter').value = 'รอชำระเงิน';
+  const f = q.get('filter');
+  if (f && ['ชำระเงินแล้ว','รอชำระ','ส่งแผนเสร็จสิ้น','ยกเลิก'].indexOf(f) >= 0) orderFilter = f;
   const tab = q.get('tab');
-  switchTab(tab && canAccess(tab) ? tab : 'tosend');
+  switchTab(tab && canAccess(tab) ? tab : 'orders');
 }
 async function doLogin(){
   const pin = document.getElementById('loginPin').value.trim();
@@ -329,22 +307,16 @@ async function doLogin(){
 }
 document.getElementById('loginPin').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
 
-// 🔓 จำ PIN ไว้ในเครื่อง: เปิดครั้งต่อไปล็อกอินให้อัตโนมัติ
 async function tryRestorePin(){
   let saved = null;
   try { saved = localStorage.getItem('kps_admin_pin'); } catch(e){}
   if (!saved) return;
-  if (typeof WEB_APP_URL !== 'undefined' && String(WEB_APP_URL).indexOf('http') !== 0) return;
+  if (String(WEB_APP_URL).indexOf('http') !== 0) return;
   const res = await gs('checkAdminPin', saved);
   if (res.success){
-    adminPin = saved;
-    adminName = res.name || 'admin';
-    adminRole = res.role || 'owner';
+    adminPin = saved; adminName = res.name || 'admin'; adminRole = res.role || 'owner';
     enterApp();
-    toast('เข้าสู่ระบบอัตโนมัติ: ' + adminName);
-  } else {
-    try { localStorage.removeItem('kps_admin_pin'); } catch(e){}
-  }
+  } else { try { localStorage.removeItem('kps_admin_pin'); } catch(e){} }
 }
 function logoutAdmin(){
   if (!confirm('ออกจากระบบ? เครื่องนี้จะถาม PIN ใหม่ในครั้งถัดไป')) return;
@@ -354,28 +326,21 @@ function logoutAdmin(){
   document.getElementById('loginScreen').classList.remove('hidden');
 }
 
-/* ============================================================
-   🧭 Tabs
-============================================================ */
-const ADMIN_TABS = ['tosend','orders','report','settings','customers'];
-let currentTab = 'tosend';
+/* ============================================================ 🧭 Tabs ============================================================ */
+let currentTab = 'orders';
 async function switchTab(name){
-  if (!canAccess(name)){
-    toast('บัญชีพนักงานเข้าได้เฉพาะเมนูออเดอร์', false);
-    return;
-  }
+  if (!canAccess(name)){ toast('บัญชีพนักงานเข้าได้เฉพาะเมนูออเดอร์', false); return; }
   currentTab = name;
   document.querySelectorAll('.tab-page').forEach(function(s){ s.classList.add('hidden'); });
   document.getElementById('tab-' + name).classList.remove('hidden');
   document.querySelectorAll('.bnav').forEach(function(b){ b.classList.toggle('active', b.dataset.tab === name); });
+  window.scrollTo(0,0);
   refreshCurrent();
 }
 function refreshCurrent(){
   if (!adminPin) return;
-  if (currentTab === 'tosend') loadToSend();
   if (currentTab === 'orders') loadOrders();
   if (currentTab === 'customers') loadCustomers();
-  if (currentTab === 'report') loadReport();
   if (currentTab === 'settings') loadSettingsForm();
 }
 
@@ -387,143 +352,146 @@ const STATUS_BADGE = {
   'ยกเลิก':'bg-red-100 text-red-700'
 };
 
-/* ============================================================
-   📦 จัดการคำสั่งซื้อ (แอดมิน)
-============================================================ */
-/* ============================================================
-   📬 ออเดอร์ที่ต้องส่ง (ชำระเงินแล้ว/อนุมัติแล้ว รอส่งแผน)
-============================================================ */
-async function loadToSend(){
-  if (!adminPin) return;
-  const res = await gs('listOrders', adminPin, 'ทั้งหมด');
-  if (!res.success){ toast(res.error, false); return; }
-  const list = res.orders.filter(function(o){
-    return o.status === 'ชำระเงินแล้ว' || o.status === 'อนุมัติส่งแผน';
-  });
-  const box = document.getElementById('tosendList');
-  if (!list.length){
-    box.innerHTML = '<div class="text-center py-14"><div class="text-5xl">🎉</div>' +
-      '<div class="text-sm font-bold text-gray-500 mt-3">ไม่มีออเดอร์ที่ต้องส่ง</div>' +
-      '<div class="text-xs text-gray-400 mt-1">ส่งครบหมดแล้ว!</div></div>';
-    return;
-  }
-  box.innerHTML = list.map(function(o){
-    return '<div class="border-2 border-blue-100 bg-blue-50/30 rounded-xl p-3">' +
-      '<div class="flex items-center justify-between flex-wrap gap-1">' +
-        '<div><b class="text-violet-800">#'+esc(o.orderId)+'</b> <span class="text-xs text-gray-600">'+esc(o.customer)+'</span></div>' +
-        '<span class="text-[11px] font-bold rounded-full px-2.5 py-1 '+(STATUS_BADGE[o.status]||'bg-gray-100')+'">'+esc(o.status)+'</span></div>' +
-      '<div class="text-[11px] text-gray-500 mt-0.5">'+esc(o.timestamp)+' • '+esc(o.email)+'</div>' +
-      '<div class="text-xs text-gray-700 mt-1.5">'+o.items.map(function(it){ return '📘 '+esc(it.subject)+' '+esc(it.grade); }).join('<br>')+'</div>' +
-      '<div class="text-xs mt-1.5">ยอดสุทธิ <b class="text-green-600">'+baht(o.netTotal)+'</b></div>' +
-      '<div class="flex gap-2 flex-wrap mt-2.5">' +
-        (o.slipUrl ? '<a href="'+esc(o.slipUrl)+'" target="_blank" class="text-[11px] font-bold text-sky-700 bg-sky-50 border border-sky-200 rounded-lg px-3 py-2">🧾 ดูสลิป</a>' : '') +
-        '<button onclick="approveOrderUI(\''+esc(o.orderId)+'\')" class="flex-1 text-xs font-extrabold text-white bg-green-500 hover:bg-green-600 rounded-lg px-3 py-2 shadow">✅ อนุมัติ + ส่งแผนทางอีเมล</button>' +
-        '<button onclick="markSentUI(\''+esc(o.orderId)+'\')" title="ใช้เมื่อส่งงานให้ลูกค้าไปแล้วทางช่องทางอื่น" class="text-[11px] font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-lg px-3 py-2">☑️ ส่งแล้ว (ไม่ส่งเมล)</button>' +
-      '</div></div>';
-  }).join('');
-}
-
+/* ============================================================ 📦 รายการออเดอร์ ============================================================ */
 let ALL_ORDERS = [];
+let orderFilter = 'ชำระเงินแล้ว'; // ค่าเริ่มต้น = แสดงหน้าแรก
+
+// จับกลุ่มสถานะเข้าแต่ละชิป
+function matchFilter(status, f){
+  if (f === 'ชำระเงินแล้ว')   return status === 'ชำระเงินแล้ว' || status === 'อนุมัติส่งแผน';
+  if (f === 'รอชำระ')         return status === 'รอชำระเงิน';
+  if (f === 'ส่งแผนเสร็จสิ้น') return status === 'ส่งแผนเสร็จสิ้น';
+  if (f === 'ยกเลิก')         return status === 'ยกเลิก';
+  return true;
+}
+function setOrderFilter(f){
+  orderFilter = f;
+  document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('active', c.dataset.f === f); });
+  renderOrders();
+}
 async function loadOrders(){
   if (!adminPin) return;
   const res = await gs('listOrders', adminPin, 'ทั้งหมด');
   if (!res.success){ toast(res.error, false); return; }
-  ALL_ORDERS = res.orders;
-  document.getElementById('ordersScope').textContent =
-    adminRole === 'staff' ? '(บัญชีพนักงาน — แสดง 7 วันล่าสุด)' : '';
-  // เติมตัวเลือกเดือนจากข้อมูลจริง (ใหม่→เก่า)
-  const months = Array.from(new Set(ALL_ORDERS.map(function(o){ return o.timestamp.slice(0,7); })))
-    .filter(Boolean).sort().reverse();
-  const sel = document.getElementById('orderMonth');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">ทุกเดือน</option>' + months.map(function(m){
-    return '<option value="'+m+'"'+(m===cur?' selected':'')+'>'+m+'</option>';
-  }).join('');
+  ALL_ORDERS = res.orders || [];
+  document.getElementById('ordersScope').textContent = adminRole === 'staff' ? '(พนักงาน — 7 วันล่าสุด)' : '';
+  // อัปเดตตัวเลขบนชิป + ซิงค์ชิปที่เลือกอยู่ให้ตรงกับ orderFilter (รองรับลิงก์ลัด)
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.classList.toggle('active', c.dataset.f === orderFilter);
+    const n = ALL_ORDERS.filter(function(o){ return matchFilter(o.status, c.dataset.f); }).length;
+    const s = c.querySelector('.cnt'); if (s) s.textContent = n ? '('+n+')' : '';
+  });
   renderOrders();
 }
 function renderOrders(){
-  const month = document.getElementById('orderMonth').value;
-  const status = document.getElementById('orderFilter').value;
   const q = (document.getElementById('orderSearch').value || '').trim().toLowerCase();
   const list = ALL_ORDERS.filter(function(o){
-    if (month && o.timestamp.slice(0,7) !== month) return false;
-    if (status && status !== 'ทั้งหมด' && o.status !== status) return false;
+    if (!matchFilter(o.status, orderFilter)) return false;
     if (q && (o.orderId+' '+o.customer+' '+o.email).toLowerCase().indexOf(q) < 0) return false;
     return true;
   });
   const box = document.getElementById('orderList');
-  if (!list.length){ box.innerHTML = '<div class="text-center text-xs text-gray-400 py-6">ไม่มีคำสั่งซื้อในเงื่อนไขนี้</div>'; return; }
-  // คั่นหัวข้อวันเพื่อแยกออเดอร์แต่ละวันชัดเจน
-  let lastDay = '';
+  if (!list.length){
+    box.innerHTML = '<div class="text-center py-14"><div class="text-5xl">📭</div>' +
+      '<div class="text-base font-bold text-gray-500 mt-3">ไม่มีออเดอร์ในหมวดนี้</div></div>';
+    return;
+  }
   box.innerHTML = list.map(function(o){
-    const day = o.timestamp.slice(0,10);
-    let head = '';
-    if (day !== lastDay){
-      lastDay = day;
-      head = '<div class="text-[11px] font-extrabold text-violet-500 bg-violet-50 rounded-lg px-3 py-1 mt-2">📅 '+esc(day)+'</div>';
-    }
-    const canApprove = o.status !== 'ส่งแผนเสร็จสิ้น' && o.status !== 'ยกเลิก';
-    return head + '<div class="border border-violet-100 rounded-xl p-3">' +
+    const paid = (o.status === 'ชำระเงินแล้ว' || o.status === 'อนุมัติส่งแผน');
+    const done = (o.status === 'ส่งแผนเสร็จสิ้น');
+    const cancelled = (o.status === 'ยกเลิก');
+    const j = JSON.stringify(o.orderId).replace(/"/g,'&quot;');
+    const em = JSON.stringify(o.email||'').replace(/"/g,'&quot;');
+    let btns = '';
+    if (o.slipUrl) btns += '<a href="'+esc(o.slipUrl)+'" target="_blank" class="text-sm font-bold text-sky-700 bg-sky-50 border border-sky-200 rounded-xl px-3 py-2">🧾 สลิป</a>';
+    if (paid) btns += '<button onclick="approveOrderUI('+j+')" class="flex-1 min-w-[10rem] text-base font-extrabold text-white bg-green-500 hover:bg-green-600 rounded-xl px-3 py-2.5 shadow">✅ อนุมัติ + ส่งเมล</button>';
+    // ✏️ แก้ Gmail (ทุกสถานะยกเว้นยกเลิก) — แก้ที่พิมพ์ผิด + ส่งใหม่ได้
+    if (!cancelled) btns += '<button onclick="openEmailModal('+j+','+em+')" class="text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">✏️ แก้ Gmail</button>';
+    if (done) btns += '<button onclick="resendUI('+j+')" class="text-sm font-bold text-violet-700 bg-violet-50 border border-violet-200 rounded-xl px-3 py-2">📧 ส่งซ้ำ</button>';
+    if (paid) btns += '<button onclick="markSentUI('+j+')" title="ส่งงานทางช่องทางอื่นแล้ว" class="text-sm font-bold text-gray-500 bg-gray-100 rounded-xl px-3 py-2">☑️ ส่งแล้ว</button>';
+    if (!done && !cancelled) btns += '<button onclick="cancelOrderUI('+j+')" class="text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">🚫 ยกเลิก</button>';
+
+    return '<div class="border border-violet-100 rounded-2xl p-4 shadow-sm">' +
       '<div class="flex items-center justify-between flex-wrap gap-1">' +
-        '<div><b class="text-violet-800">#'+esc(o.orderId)+'</b> <span class="text-xs text-gray-600">'+esc(o.customer)+'</span></div>' +
-        '<span class="text-[11px] font-bold rounded-full px-2.5 py-1 '+(STATUS_BADGE[o.status]||'bg-gray-100')+'">'+esc(o.status)+'</span></div>' +
-      '<div class="text-[11px] text-gray-500 mt-0.5">'+esc(o.timestamp)+' • '+esc(o.email)+(o.phone?' • ☎️ '+esc(o.phone):'')+'</div>' +
-      '<div class="text-xs text-gray-700 mt-1.5">'+o.items.map(function(it){ return '📘 '+esc(it.subject)+' '+esc(it.grade)+' — '+baht(it.price); }).join('<br>')+'</div>' +
-      '<div class="text-xs mt-1.5">ยอดสุทธิ <b class="text-green-600">'+baht(o.netTotal)+'</b>'+(o.discount?' <span class="text-fuchsia-600">(ลด '+o.discountPct+'% = '+baht(o.discount)+')</span>':'')+'</div>' +
-      (o.note ? '<div class="text-[11px] text-gray-400 mt-0.5">📝 '+esc(o.note)+'</div>' : '') +
-      '<div class="flex gap-2 flex-wrap mt-2.5">' +
-        (o.slipUrl ? '<a href="'+esc(o.slipUrl)+'" target="_blank" class="text-[11px] font-bold text-sky-700 bg-sky-50 border border-sky-200 rounded-lg px-3 py-1.5">🧾 ดูสลิป</a>' : '<span class="text-[11px] text-gray-400 px-1 py-1.5">ยังไม่มีสลิป</span>') +
-        (canApprove ? '<button onclick="approveOrderUI(\''+esc(o.orderId)+'\')" class="text-[11px] font-bold text-white bg-green-500 hover:bg-green-600 rounded-lg px-3 py-1.5">✅ อนุมัติ + ส่งแผนทางอีเมล</button>' : '') +
-        (canApprove ? '<button onclick="cancelOrderUI(\''+esc(o.orderId)+'\')" class="text-[11px] font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-1.5">🚫 ยกเลิก</button>' : '') +
-      '</div></div>';
+        '<div class="text-base"><b class="text-violet-800">#'+esc(o.orderId)+'</b> <span class="text-gray-700">'+esc(o.customer)+'</span></div>' +
+        '<span class="text-xs font-bold rounded-full px-3 py-1 '+(STATUS_BADGE[o.status]||'bg-gray-100')+'">'+esc(o.status)+'</span></div>' +
+      '<div class="text-sm text-gray-500 mt-1">📧 '+esc(o.email)+(o.phone?' • ☎️ '+esc(o.phone):'')+'</div>' +
+      '<div class="text-xs text-gray-400 mt-0.5">'+esc(o.timestamp)+'</div>' +
+      '<div class="text-sm text-gray-700 mt-2">'+o.items.map(function(it){ return '📘 '+esc(it.subject)+' '+esc(it.grade); }).join('<br>')+'</div>' +
+      '<div class="text-base mt-2">ยอดสุทธิ <b class="text-green-600">'+baht(o.netTotal)+'</b>'+(o.discount?' <span class="text-fuchsia-600 text-sm">(ลด '+o.discountPct+'%)</span>':'')+'</div>' +
+      (o.note ? '<div class="text-xs text-gray-400 mt-0.5">📝 '+esc(o.note)+'</div>' : '') +
+      '<div class="flex gap-2 flex-wrap mt-3">' + btns + '</div></div>';
   }).join('');
 }
 async function markSentUI(orderId){
-  if (!confirm('ทำเครื่องหมายว่า '+orderId+' ส่งแล้ว?\n(เปลี่ยนสถานะเป็น "ส่งแผนเสร็จสิ้น" โดยไม่ส่งอีเมลใดๆ)')) return;
+  if (!confirm('ทำเครื่องหมายว่า '+orderId+' ส่งแล้ว?\n(เปลี่ยนเป็น "ส่งแผนเสร็จสิ้น" โดยไม่ส่งอีเมล)')) return;
   const res = await gs('updateOrderStatus', adminPin, orderId, 'ส่งแผนเสร็จสิ้น', 'ทำเครื่องหมายส่งแล้ว');
-  if (res.success){ toast('บันทึกแล้ว'); refreshCurrent(); }
-  else toast(res.error, false);
+  if (res.success){ toast('บันทึกแล้ว'); loadOrders(); } else toast(res.error, false);
 }
 async function approveOrderUI(orderId){
-  if (!confirm('อนุมัติออเดอร์ '+orderId+' และส่งลิงก์แผนไปยังอีเมลลูกค้าทันที?')) return;
+  if (!confirm('อนุมัติออเดอร์ '+orderId+' และส่งลิงก์แผนไปอีเมลลูกค้าทันที?')) return;
   const res = await gs('approveOrder', adminPin, orderId);
-  if (res.success){ toast('ส่งแผนทางอีเมลเรียบร้อย 💌'); refreshCurrent(); }
-  else toast(res.error, false);
+  if (res.success){ toast('ส่งแผนทางอีเมลเรียบร้อย 💌'); loadOrders(); } else toast(res.error, false);
+}
+async function resendUI(orderId){
+  if (!confirm('ส่งแผนซ้ำไปยังอีเมลลูกค้าของออเดอร์ '+orderId+' อีกครั้ง?')) return;
+  const res = await gs('approveOrder', adminPin, orderId);
+  if (res.success){ toast('ส่งแผนซ้ำเรียบร้อย 💌'); loadOrders(); } else toast(res.error, false);
 }
 async function cancelOrderUI(orderId){
   if (!confirm('ยกเลิกออเดอร์ '+orderId+' ?')) return;
   const res = await gs('updateOrderStatus', adminPin, orderId, 'ยกเลิก', 'ยกเลิก');
-  if (res.success){ toast('ยกเลิกแล้ว'); refreshCurrent(); }
-  else toast(res.error, false);
+  if (res.success){ toast('ยกเลิกแล้ว'); loadOrders(); } else toast(res.error, false);
 }
 
-/* ============================================================
-   👥 ประวัติลูกค้า (เจ้าของระบบ)
-============================================================ */
+/* ── ✏️ แก้ไข Gmail ลูกค้า ── */
+let emCurrentOrder = '';
+function openEmailModal(orderId, email){
+  emCurrentOrder = orderId;
+  document.getElementById('emOrderId').textContent = orderId;
+  document.getElementById('emInput').value = email || '';
+  document.getElementById('emailModal').classList.remove('hidden');
+  setTimeout(function(){ document.getElementById('emInput').focus(); }, 100);
+}
+function closeEmailModal(){ document.getElementById('emailModal').classList.add('hidden'); }
+async function saveEmail(resend){
+  const email = document.getElementById('emInput').value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ toast('รูปแบบอีเมลไม่ถูกต้อง', false); return; }
+  const res = await gs('updateOrderEmail', adminPin, emCurrentOrder, email);
+  if (!res.success){ toast(res.error, false); return; }
+  toast('บันทึกอีเมลใหม่แล้ว');
+  if (resend){
+    const r2 = await gs('approveOrder', adminPin, emCurrentOrder);
+    if (r2.success) toast('ส่งแผนใหม่ไปยัง ' + email + ' แล้ว 💌');
+    else { toast(r2.error, false); }
+  }
+  closeEmailModal();
+  loadOrders();
+}
+
+/* ============================================================ 👥 ประวัติลูกค้า ============================================================ */
 let ALL_CUSTOMERS = [];
 async function loadCustomers(){
   if (!adminPin) return;
   const res = await gs('listCustomers', adminPin);
   if (!res.success){ toast(res.error, false); return; }
-  ALL_CUSTOMERS = res.customers;
+  ALL_CUSTOMERS = res.customers || [];
   document.getElementById('custCount').textContent = '(' + ALL_CUSTOMERS.length + ' คน)';
   renderCustomers();
 }
 function renderCustomers(){
   const q = (document.getElementById('custSearch').value || '').trim().toLowerCase();
-  const list = ALL_CUSTOMERS.filter(function(c){
-    return !q || (c.name+' '+c.email).toLowerCase().indexOf(q) >= 0;
-  });
+  const list = ALL_CUSTOMERS.filter(function(c){ return !q || (c.name+' '+c.email).toLowerCase().indexOf(q) >= 0; });
   const box = document.getElementById('custList');
-  if (!list.length){ box.innerHTML = '<div class="text-center text-xs text-gray-400 py-6">ยังไม่มีข้อมูลลูกค้า</div>'; return; }
+  if (!list.length){ box.innerHTML = '<div class="text-center text-sm text-gray-400 py-6">ยังไม่มีข้อมูลลูกค้า</div>'; return; }
   box.innerHTML = list.map(function(c){
-    return '<div class="border border-violet-100 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">' +
-      '<div><b class="text-gray-800">'+esc(c.name)+'</b>' +
-      '<div class="text-[11px] text-gray-500">'+esc(c.email)+(c.phone?' • ☎️ '+esc(c.phone):'')+' • ซื้อล่าสุด '+esc(c.lastDate.slice(0,10))+'</div></div>' +
-      '<div class="flex items-center gap-3 text-xs">' +
+    return '<div class="border border-violet-100 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">' +
+      '<div><b class="text-gray-800 text-base">'+esc(c.name)+'</b>' +
+      '<div class="text-xs text-gray-500">'+esc(c.email)+(c.phone?' • ☎️ '+esc(c.phone):'')+' • ล่าสุด '+esc(c.lastDate.slice(0,10))+'</div></div>' +
+      '<div class="flex items-center gap-3 text-sm">' +
         '<span class="font-bold text-violet-700">'+c.orderCount+' ออเดอร์</span>' +
         '<span class="font-bold text-green-600">'+baht(c.totalSpent)+'</span>' +
-        '<button onclick="viewCustomer(\''+esc(c.email)+'\')" class="font-bold text-white bg-violet-500 hover:bg-violet-600 rounded-lg px-3 py-1.5 text-[11px]">📜 ประวัติ</button>' +
+        '<button onclick="viewCustomer('+JSON.stringify(c.email).replace(/"/g,'&quot;')+')" class="font-bold text-white bg-violet-500 hover:bg-violet-600 rounded-xl px-3 py-2 text-sm">📜</button>' +
       '</div></div>';
   }).join('');
 }
@@ -534,57 +502,18 @@ async function viewCustomer(email){
   document.getElementById('chTitle').textContent = (c.name || email);
   document.getElementById('chSub').textContent = email + ' • รวม ' + baht(c.totalSpent||0) + ' จาก ' + (c.orderCount||0) + ' ออเดอร์';
   document.getElementById('chBody').innerHTML = res.orders.map(function(o){
-    return '<div class="border border-violet-100 rounded-xl p-2.5 text-xs">' +
+    return '<div class="border border-violet-100 rounded-xl p-3 text-sm">' +
       '<div class="flex justify-between flex-wrap gap-1"><b class="text-violet-800">#'+esc(o.orderId)+'</b>' +
-      '<span class="text-[10px] font-bold rounded-full px-2 py-0.5 '+(STATUS_BADGE[o.status]||'bg-gray-100')+'">'+esc(o.status)+'</span></div>' +
-      '<div class="text-[10px] text-gray-400">'+esc(o.timestamp)+'</div>' +
+      '<span class="text-xs font-bold rounded-full px-2 py-0.5 '+(STATUS_BADGE[o.status]||'bg-gray-100')+'">'+esc(o.status)+'</span></div>' +
+      '<div class="text-xs text-gray-400">'+esc(o.timestamp)+'</div>' +
       '<div class="mt-1 text-gray-700">'+o.items.map(function(it){ return '📘 '+esc(it.subject)+' '+esc(it.grade); }).join('<br>')+'</div>' +
       '<div class="mt-1 flex justify-between items-center"><b class="text-green-600">'+baht(o.netTotal)+'</b>' +
-      (o.slipUrl?'<a href="'+esc(o.slipUrl)+'" target="_blank" class="text-sky-600 font-bold">🧾 สลิป</a>':'')+'</div>' +
-      (o.note?'<div class="text-[10px] text-gray-400 mt-0.5">📝 '+esc(o.note)+'</div>':'') +
-      '</div>';
-  }).join('') || '<div class="text-center text-gray-400 py-4 text-xs">ไม่มีประวัติ</div>';
+      (o.slipUrl?'<a href="'+esc(o.slipUrl)+'" target="_blank" class="text-sky-600 font-bold">🧾 สลิป</a>':'')+'</div></div>';
+  }).join('') || '<div class="text-center text-gray-400 py-4 text-sm">ไม่มีประวัติ</div>';
   document.getElementById('custModal').classList.remove('hidden');
 }
 
-/* ============================================================
-   📊 รายงานสรุป (แอดมิน)
-============================================================ */
-let dailyChart = null;
-async function loadReport(){
-  if (!adminPin) return;
-  const res = await gs('getReportData', adminPin);
-  if (!res.success){ toast(res.error, false); return; }
-  const r = res.report;
-  const card = function(icon, label, value, color){
-    return '<div class="bg-white rounded-2xl shadow-sm border border-violet-100 p-3 text-center">' +
-      '<div class="text-xl">'+icon+'</div><div class="text-lg font-extrabold '+color+'">'+value+'</div>' +
-      '<div class="text-[11px] text-gray-500">'+label+'</div></div>';
-  };
-  document.getElementById('reportCards').innerHTML =
-    card('💰','ยอดขายวันนี้', baht(r.todaySum), 'text-green-600') +
-    card('📅','ยอดขายเดือนนี้', baht(r.monthSum), 'text-violet-600') +
-    card('🏦','ยอดขายสะสม', baht(r.allSum), 'text-fuchsia-600') +
-    card('📦','ออเดอร์ทั้งหมด', r.totalOrders + ' รายการ', 'text-sky-600');
-  if (dailyChart) dailyChart.destroy();
-  dailyChart = new Chart(document.getElementById('dailyChart'), {
-    type: 'line',
-    data: { labels: r.dailyLabels.map(function(d){ return d.slice(5); }),
-      datasets: [{ label:'ยอดขาย (บาท)', data: r.dailyValues, borderColor:'#8b5cf6',
-        backgroundColor:'rgba(139,92,246,.12)', fill:true, tension:.35, pointRadius:2 }] },
-    options: { plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
-  });
-  document.getElementById('topSubjects').innerHTML = r.topSubjects.length
-    ? r.topSubjects.map(function(s,i){
-        return '<div class="flex items-center justify-between bg-violet-50 rounded-xl px-3 py-2">' +
-          '<span>'+(i+1)+'. '+esc(s.name)+'</span><b class="text-violet-700">'+s.count+' ออเดอร์</b></div>';
-      }).join('')
-    : '<div class="text-xs text-gray-400 text-center py-4">ยังไม่มีข้อมูลการขาย</div>';
-}
-
-/* ============================================================
-   ⚙️ ตั้งค่าระบบ (แอดมิน)
-============================================================ */
+/* ============================================================ ⚙️ ตั้งค่าระบบ ============================================================ */
 async function loadSettingsForm(){
   if (!adminPin) return;
   const res = await gs('getSettings', adminPin);
@@ -604,8 +533,7 @@ async function loadSettingsForm(){
   const lg = document.getElementById('stLogoPreview');
   if (m.logoURL){ lg.src = m.logoURL; lg.classList.remove('hidden'); }
   const qr = document.getElementById('stQRPreview');
-  if (m.qrURL){ qr.src = m.qrURL; qr.classList.remove('hidden'); }
-  else qr.classList.add('hidden');
+  if (m.qrURL){ qr.src = m.qrURL; qr.classList.remove('hidden'); } else qr.classList.add('hidden');
 }
 async function saveSettingsForm(){
   const data = {
@@ -623,7 +551,6 @@ async function saveSettingsForm(){
   const res = await gs('saveSettings', adminPin, data);
   if (res.success){
     toast('บันทึกการตั้งค่าแล้ว');
-    // ถ้าแก้ PIN ของตัวเองในบัญชีแอดมิน ให้ล็อกอินใหม่ด้วย PIN ใหม่
     if (data.admins !== undefined){
       const me = data.admins.split(',').map(function(p){ return p.trim().match(/^([^=]+)=([^:]+):(owner|staff)$/); })
         .filter(Boolean).filter(function(mt){ return mt[1].trim() === adminName; })[0];
@@ -632,7 +559,6 @@ async function saveSettingsForm(){
   } else toast(res.error, false);
 }
 async function findChatId(){
-  // บันทึก Token ก่อน เผื่อเพิ่งวาง
   const tk = document.getElementById('stTgToken').value.trim();
   if (!tk){ toast('วาง Bot Token ก่อนค่ะ', false); return; }
   await gs('saveSettings', adminPin, { telegramBotToken: tk });
@@ -644,7 +570,6 @@ async function findChatId(){
   toast('พบ Chat ID ของ ' + (c.name || c.id) + ' และบันทึกแล้ว');
 }
 async function testTg(){
-  // บันทึกค่าในช่องก่อนทดสอบ
   await gs('saveSettings', adminPin, {
     telegramBotToken: document.getElementById('stTgToken').value.trim(),
     telegramChatId: document.getElementById('stTgChat').value.trim()
@@ -673,14 +598,9 @@ async function uploadSetting(kind){
   } catch(e){ toast(e.message, false); }
 }
 
-/* ============================================================
-   💾 Backup / Import / ล้างข้อมูล (Action Bar)
-============================================================ */
 /* ░░ เริ่มทำงาน ░░ */
 tryRestorePin();
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./service-worker.js').catch(function(){});
-}
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./service-worker.js').catch(function(){}); }
 </script>
 </body>
 </html>
