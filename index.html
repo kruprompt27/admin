@@ -182,6 +182,9 @@
   </div>
 </div>
 
+<!-- ░░ ช่องเลือกไฟล์สลิป (ซ่อน) — แอดมินแนบสลิปแทนลูกค้า ░░ -->
+<input type="file" id="slipFile" accept="image/*" class="hidden" onchange="onSlipPicked()">
+
 <!-- ░░ Modal: แก้ไข Gmail ลูกค้า ░░ -->
 <div id="emailModal" class="hidden fixed inset-0 bg-black/50 z-[92] flex items-center justify-center p-5">
   <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
@@ -398,6 +401,7 @@ function renderOrders(){
   }
   box.innerHTML = list.map(function(o){
     const paid = (o.status === 'ชำระเงินแล้ว' || o.status === 'อนุมัติส่งแผน');
+    const pending = (o.status === 'รอชำระเงิน');
     const done = (o.status === 'ส่งแผนเสร็จสิ้น');
     const cancelled = (o.status === 'ยกเลิก');
     const j = JSON.stringify(o.orderId).replace(/"/g,'&quot;');
@@ -405,6 +409,9 @@ function renderOrders(){
     let btns = '';
     if (o.slipUrl) btns += '<a href="'+esc(o.slipUrl)+'" target="_blank" class="text-sm font-bold text-sky-700 bg-sky-50 border border-sky-200 rounded-xl px-3 py-2">🧾 สลิป</a>';
     if (paid) btns += '<button onclick="approveOrderUI('+j+')" class="flex-1 min-w-[10rem] text-base font-extrabold text-white bg-green-500 hover:bg-green-600 rounded-xl px-3 py-2.5 shadow">✅ อนุมัติ + ส่งเมล</button>';
+    // ⏳ รอชำระ: แอดมินแนบสลิปแทนลูกค้า / หรือส่งแผนเลย
+    if (pending) btns += '<button onclick="pickSlip('+j+')" class="flex-1 min-w-[10rem] text-base font-extrabold text-white bg-sky-500 hover:bg-sky-600 rounded-xl px-3 py-2.5 shadow">🧾 แนบสลิปให้ลูกค้า</button>';
+    if (pending) btns += '<button onclick="approvePendingUI('+j+')" class="text-sm font-bold text-green-700 bg-green-50 border border-green-200 rounded-xl px-3 py-2">✅ ส่งแผนเลย</button>';
     // ✏️ แก้ Gmail (ทุกสถานะยกเว้นยกเลิก) — แก้ที่พิมพ์ผิด + ส่งใหม่ได้
     if (!cancelled) btns += '<button onclick="openEmailModal('+j+','+em+')" class="text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">✏️ แก้ Gmail</button>';
     if (done) btns += '<button onclick="resendUI('+j+')" class="text-sm font-bold text-violet-700 bg-violet-50 border border-violet-200 rounded-xl px-3 py-2">📧 ส่งซ้ำ</button>';
@@ -442,6 +449,35 @@ async function cancelOrderUI(orderId){
   if (!confirm('ยกเลิกออเดอร์ '+orderId+' ?')) return;
   const res = await gs('updateOrderStatus', adminPin, orderId, 'ยกเลิก', 'ยกเลิก');
   if (res.success){ toast('ยกเลิกแล้ว'); loadOrders(); } else toast(res.error, false);
+}
+
+/* ── 🧾 แนบสลิปแทนลูกค้า (ออเดอร์รอชำระ) ── */
+let slipCurrentOrder = '';
+function pickSlip(orderId){
+  slipCurrentOrder = orderId;
+  document.getElementById('slipFile').click();
+}
+async function onSlipPicked(){
+  const input = document.getElementById('slipFile');
+  const f = input.files[0];
+  input.value = ''; // เคลียร์ให้เลือกไฟล์เดิมซ้ำได้
+  if (!f || !slipCurrentOrder) return;
+  if (!confirm('แนบสลิปให้ออเดอร์ '+slipCurrentOrder+' ?\n(สถานะจะเปลี่ยนเป็น "ชำระเงินแล้ว" อัตโนมัติ)')) return;
+  try {
+    const b64 = await compressImage(f);
+    const res = await gs('uploadSlip', slipCurrentOrder, b64, 'image/jpeg');
+    if (!res.success){ toast(res.error, false); return; }
+    toast('แนบสลิปแล้ว สถานะเปลี่ยนเป็นชำระเงินแล้ว 🧾');
+    slipCurrentOrder = '';
+    loadOrders();
+  } catch(e){ toast(e.message, false); }
+}
+
+/* ── ✅ ส่งแผนเลยจากออเดอร์รอชำระ (แอดมินตรวจยอดเองแล้ว) ── */
+async function approvePendingUI(orderId){
+  if (!confirm('ออเดอร์ '+orderId+' ยังอยู่สถานะ "รอชำระเงิน" (ยังไม่มีสลิปในระบบ)\n\nยืนยันว่าตรวจการชำระเงินแล้ว และต้องการส่งแผนทางอีเมลเลย?')) return;
+  const res = await gs('approveOrder', adminPin, orderId);
+  if (res.success){ toast('ส่งแผนทางอีเมลเรียบร้อย 💌'); loadOrders(); } else toast(res.error, false);
 }
 
 /* ── ✏️ แก้ไข Gmail ลูกค้า ── */
