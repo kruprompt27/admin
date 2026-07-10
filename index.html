@@ -424,7 +424,7 @@ function renderOrders(){
         '<span class="text-xs font-bold rounded-full px-3 py-1 '+(STATUS_BADGE[o.status]||'bg-gray-100')+'">'+esc(o.status)+'</span></div>' +
       '<div class="text-sm text-gray-500 mt-1">📧 '+esc(o.email)+(o.phone?' • ☎️ '+esc(o.phone):'')+'</div>' +
       '<div class="text-xs text-gray-400 mt-0.5">'+esc(o.timestamp)+'</div>' +
-      '<div class="text-sm text-gray-700 mt-2">'+o.items.map(function(it){ return '📘 '+esc(it.subject)+' '+esc(it.grade); }).join('<br>')+'</div>' +
+      '<div class="text-sm text-gray-700 mt-2">'+o.items.map(function(it){ var h=String(it.hours||'').replace(/\D/g,''); return '📘 '+esc(it.subject)+' '+esc(it.grade)+(h?' ('+h+'ชม.)':''); }).join('<br>')+'</div>' +
       '<div class="text-base mt-2">ยอดสุทธิ <b class="text-green-600">'+baht(o.netTotal)+'</b>'+(o.discount?' <span class="text-fuchsia-600 text-sm">(ลด '+o.discountPct+'%)</span>':'')+'</div>' +
       (o.note ? '<div class="text-xs text-gray-400 mt-0.5">📝 '+esc(o.note)+'</div>' : '') +
       '<div class="flex gap-2 flex-wrap mt-3">' + btns + '</div></div>';
@@ -542,7 +542,7 @@ async function viewCustomer(email){
       '<div class="flex justify-between flex-wrap gap-1"><b class="text-violet-800">#'+esc(o.orderId)+'</b>' +
       '<span class="text-xs font-bold rounded-full px-2 py-0.5 '+(STATUS_BADGE[o.status]||'bg-gray-100')+'">'+esc(o.status)+'</span></div>' +
       '<div class="text-xs text-gray-400">'+esc(o.timestamp)+'</div>' +
-      '<div class="mt-1 text-gray-700">'+o.items.map(function(it){ return '📘 '+esc(it.subject)+' '+esc(it.grade); }).join('<br>')+'</div>' +
+      '<div class="mt-1 text-gray-700">'+o.items.map(function(it){ var h=String(it.hours||'').replace(/\D/g,''); return '📘 '+esc(it.subject)+' '+esc(it.grade)+(h?' ('+h+'ชม.)':''); }).join('<br>')+'</div>' +
       '<div class="mt-1 flex justify-between items-center"><b class="text-green-600">'+baht(o.netTotal)+'</b>' +
       (o.slipUrl?'<a href="'+esc(o.slipUrl)+'" target="_blank" class="text-sky-600 font-bold">🧾 สลิป</a>':'')+'</div></div>';
   }).join('') || '<div class="text-center text-gray-400 py-4 text-sm">ไม่มีประวัติ</div>';
