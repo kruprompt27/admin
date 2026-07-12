@@ -1,9 +1,9 @@
 /**
- * Service Worker - ครูพร้อมสอน Admin PWA (v1.1.0)
+ * Service Worker - ครูพร้อมสอน Admin PWA (v1.4.0)
  * - App shell (HTML/ไอคอน/manifest): Cache-First
  * - การเรียก Apps Script: Network-only (ข้อมูลสดเสมอ)
  */
-const CACHE_VERSION = 'krupromsorn-v1.3.0';
+const CACHE_VERSION = 'krupromsorn-v1.4.0';   // v1.4.0: manifest เปลี่ยนเป็น network-first แก้ปัญหา start_url ค้างแคช
 const CACHE_NAME = `${CACHE_VERSION}-cache`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -56,11 +56,11 @@ self.addEventListener('fetch', (event) => {
   if (request.destination === 'image' ||
       request.destination === 'font' ||
       request.destination === 'style' ||
-      request.destination === 'script' ||
-      url.pathname.endsWith('.json')) {
+      request.destination === 'script') {
     event.respondWith(cacheFirst(request));
     return;
   }
+  // .json (โดยเฉพาะ manifest.json) ใช้ network-first — กัน start_url เก่าค้างแคชตอนติดตั้งแอป
   event.respondWith(networkFirst(request));
 });
 
